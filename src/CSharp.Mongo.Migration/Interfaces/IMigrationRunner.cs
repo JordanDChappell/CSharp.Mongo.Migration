@@ -3,5 +3,6 @@
 namespace CSharp.Mongo.Migration.Interfaces;
 
 public interface IMigrationRunner {
+    public IMigrationRunner RegisterLocator(IMigrationLocator locator);
     public Task<MigrationResult> RunAsync();
 }
