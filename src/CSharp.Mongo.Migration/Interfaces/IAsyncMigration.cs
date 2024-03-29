@@ -3,6 +3,6 @@
 namespace CSharp.Mongo.Migration.Interfaces;
 
 public interface IAsyncMigration {
-    public Task UpAsync<T>(IMongoCollection<T> collection);
-    public Task DownAsync<T>(IMongoCollection<T> collection);
+    public Task UpAsync<T>(IMongoDatabase database);
+    public Task DownAsync<T>(IMongoDatabase database);
 }
