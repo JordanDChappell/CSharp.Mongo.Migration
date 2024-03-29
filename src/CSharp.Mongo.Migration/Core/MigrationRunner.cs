@@ -7,23 +7,39 @@ using MongoDB.Driver;
 namespace CSharp.Mongo.Migration.Core;
 
 public class MigrationRunner : IMigrationRunner {
+    private readonly string migrationCollectionName = "_migrations";
+
     private readonly IMongoDatabase _database;
-    private readonly MigrationManager _manager;
+    private readonly IMongoCollection<MigrationDocument> _migrationCollection;
 
     public MigrationRunner(string connectionString) {
         _database = DatabaseConnectionFactory.GetDatabase(connectionString);
-        _manager = new();
+        _migrationCollection = _database.GetCollection<MigrationDocument>(migrationCollectionName);
     }
 
-    public MigrationResult Run() {
-        var migrations = _manager.GetMigrations(_database);
-
-        return new();
+    public async Task<MigrationResult> RunAsync() {
+        IEnumerable<IMigration> migrations = MigrationManager.GetMigrations(_database);
+        return await RunAsync(migrations);
     }
 
-    public MigrationResult Run(string version) {
-        var migrations = _manager.GetMigrations(_database, version);
+    public async Task<MigrationResult> RunAsync(string version) {
+        IEnumerable<IMigration> migrations = MigrationManager.GetMigrations(_database, version);
+        return await RunAsync(migrations);
+    }
 
-        return new();
+    private async Task<MigrationResult> RunAsync(IEnumerable<IMigration> migrations) {
+        List<MigrationDocument> steps = [];
+
+        foreach (IMigration migration in migrations) {
+            await migration.UpAsync(_database);
+
+            MigrationDocument document = migration.ToDocument();
+            await _migrationCollection.InsertOneAsync(document);
+            steps.Add(document);
+        }
+
+        return new() {
+            Steps = steps,
+        };
     }
 }

@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace CSharp.Mongo.Migration.Models;
 
-public class Migration {
+public class MigrationDocument {
     public ObjectId Id { get; set; }
     public string? Name { get; set; }
     public string? Version { get; set; }
