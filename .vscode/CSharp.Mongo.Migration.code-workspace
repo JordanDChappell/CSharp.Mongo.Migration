@@ -1,0 +1,24 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"[csharp]": {
+			"files.insertFinalNewline": true,
+		},
+		"csharp.format.enable": true,
+		"editor.tabSize": 4,
+		"yaml.format.singleQuote": true,
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-dotnettools.csharp",
+			"github.vscode-pull-request-github",
+			"jmrog.vscode-nuget-package-manager",
+			"ms-azure-devops.azure-pipelines",
+			"aaron-bond.better-comments",
+		]
+	}
+}
