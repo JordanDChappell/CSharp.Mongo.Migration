@@ -3,5 +3,5 @@
 namespace CSharp.Mongo.Migration.Interfaces;
 
 public interface IMigrationRunner {
-    public Task<MigrationResult> RunAsync(string version = "");
+    public Task<MigrationResult> RunAsync();
 }

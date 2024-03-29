@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3908437C-772
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharp.Mongo.Migration", "src\CSharp.Mongo.Migration\CSharp.Mongo.Migration.csproj", "{8490CBA1-6484-43B2-A286-CF724D64967A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharp.Mongo.Migration.Test", "src\CSharp.Mongo.Migration.Test\CSharp.Mongo.Migration.Test.csproj", "{359F8F1F-2897-44CD-9616-85614CBC0D15}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,12 +19,17 @@ Global
 		{8490CBA1-6484-43B2-A286-CF724D64967A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8490CBA1-6484-43B2-A286-CF724D64967A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8490CBA1-6484-43B2-A286-CF724D64967A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{359F8F1F-2897-44CD-9616-85614CBC0D15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{359F8F1F-2897-44CD-9616-85614CBC0D15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{359F8F1F-2897-44CD-9616-85614CBC0D15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{359F8F1F-2897-44CD-9616-85614CBC0D15}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8490CBA1-6484-43B2-A286-CF724D64967A} = {3908437C-772C-4805-900F-C430D120A16E}
+		{359F8F1F-2897-44CD-9616-85614CBC0D15} = {3908437C-772C-4805-900F-C430D120A16E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DE82DDAE-B878-4555-980F-3C410D69FAA1}

@@ -7,34 +7,39 @@ using MongoDB.Driver;
 namespace CSharp.Mongo.Migration.Core;
 
 public class MigrationRunner : IMigrationRunner {
-    private readonly string migrationCollectionName = "_migrations";
-
     private readonly IMongoDatabase _database;
     private readonly IMongoCollection<MigrationDocument> _migrationCollection;
+    private readonly IMigrationLocator _migrationLocator;
 
-    public MigrationRunner(string connectionString) {
+    public string MigrationCollectionName { get; set; } = "_migrations";
+
+    public MigrationRunner(string connectionString, IMigrationLocator migrationLocator) {
         _database = DatabaseConnectionFactory.GetDatabase(connectionString);
-        _migrationCollection = _database.GetCollection<MigrationDocument>(migrationCollectionName);
+        _migrationCollection = _database.GetCollection<MigrationDocument>(MigrationCollectionName);
+        _migrationLocator = migrationLocator;
     }
 
     public async Task<MigrationResult> RunAsync() {
-        IEnumerable<IMigration> migrations = MigrationManager.GetMigrations(_database);
-        return await RunAsync(migrations);
+        IEnumerable<IMigration> migrations = _migrationLocator
+            .GetMigrations(_migrationCollection)
+            .Where(m => !m.Skip);
+        return await RunMigrationsAsync(migrations);
     }
 
-    public async Task<MigrationResult> RunAsync(string version) {
-        IEnumerable<IMigration> migrations = MigrationManager.GetMigrations(_database, version);
-        return await RunAsync(migrations);
+    private async Task<MigrationDocument> RunMigrationAsync(IMigration migration) {
+        await migration.UpAsync(_database);
+
+        MigrationDocument document = migration.ToDocument();
+        await _migrationCollection.InsertOneAsync(document);
+
+        return document;
     }
 
-    private async Task<MigrationResult> RunAsync(IEnumerable<IMigration> migrations) {
-        List<MigrationDocument> steps = [];
+    private async Task<MigrationResult> RunMigrationsAsync(IEnumerable<IMigration> migrations) {
+        List<MigrationDocument> steps = new();
 
         foreach (IMigration migration in migrations) {
-            await migration.UpAsync(_database);
-
-            MigrationDocument document = migration.ToDocument();
-            await _migrationCollection.InsertOneAsync(document);
+            MigrationDocument document = await RunMigrationAsync(migration);
             steps.Add(document);
         }
 
