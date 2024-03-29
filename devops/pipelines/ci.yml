@@ -1,0 +1,29 @@
+variables:
+  - name: solutionPath
+    value: './src/CSharp.Mongo.Migration.sln'
+
+trigger:
+  batch: true
+  branches:
+    include:
+      - '*'
+
+pool:
+  vmImage: ubuntu-latest
+
+jobs:
+  - job: CI
+    steps:
+      - task: DotNetCoreCLI@2
+        displayName: Build
+        inputs:
+          command: build
+          projects: '$(solutionPath)'
+          arguments: '--configuration Release'
+      - task: DotNetCoreCLI@2
+        displayName: Test
+        inputs:
+          command: test
+          projects: '$(solutionPath)'
+          arguments: '--no-build --configuration Release'
+      
