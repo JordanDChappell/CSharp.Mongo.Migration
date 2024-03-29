@@ -8,7 +8,7 @@ namespace CSharp.Mongo.Migration.Core.Locators;
 public class SimpleMigrationLocator : IMigrationLocator {
     private readonly IEnumerable<IMigration> _migrations;
 
-    SimpleMigrationLocator(IEnumerable<IMigration> migrations) {
+    public SimpleMigrationLocator(IEnumerable<IMigration> migrations) {
         _migrations = migrations;
     }
 

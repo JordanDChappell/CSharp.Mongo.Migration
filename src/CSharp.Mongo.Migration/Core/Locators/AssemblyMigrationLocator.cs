@@ -11,13 +11,17 @@ public class AssemblyMigrationLocator : IMigrationLocator {
     private readonly Assembly _assembly;
     private readonly Type _migrationType = typeof(IMigration);
 
-    AssemblyMigrationLocator(Assembly assembly) {
+    public AssemblyMigrationLocator(Assembly assembly) {
         _assembly = assembly;
     }
 
     public IEnumerable<IMigration> GetMigrations(IMongoCollection<MigrationDocument> collection) {
         IEnumerable<Type> types = _assembly.GetTypes().Where(IsMigration);
-        return types.Select(t => (IMigration)Activator.CreateInstance(t));
+        IEnumerable<MigrationDocument> documents = collection.Find(_ => true).ToList();
+
+        return types
+            .Select(t => (IMigration)Activator.CreateInstance(t))
+            .Where(m => !documents.Any(d => d.Version == m.Version));
     }
 
     private bool IsMigration(Type type) => _migrationType.IsAssignableFrom(type) && type.IsClass && !type.IsAbstract;
