@@ -1,31 +1,55 @@
 using CSharp.Mongo.Migration.Core.Locators;
 using CSharp.Mongo.Migration.Interfaces;
 using CSharp.Mongo.Migration.Models;
+using CSharp.Mongo.Migration.Test.Infrastructure;
 
 using MongoDB.Driver;
 
-using Moq;
-
 namespace CSharp.Mongo.Migration.Test.Core.Locators;
 
-public class SimpleMigrationLocatorTests {
-    private readonly AutoMoqer _moqer = new AutoMoqer();
-    private readonly Mock<IMongoCollection<MigrationDocument>> _mockCollection;
+public class SimpleMigrationLocatorTests : DatabaseTest, IDisposable {
+    private readonly IMongoCollection<MigrationDocument> _migrationCollection;
 
-    public SimpleMigrationLocatorTests() {
-        _mockCollection = _moqer.GetMock<IMongoCollection<MigrationDocument>>();
+    public SimpleMigrationLocatorTests(DatabaseTestFixture fixture) : base(fixture) {
+        _migrationCollection = fixture.Database.GetCollection<MigrationDocument>("_migrations");
     }
 
     [Fact]
     public void GetMigrations_GivenNoMigrationsInDatabase_ShouldReturnAllMigrations() {
         List<IMigration> migrations = new() {
-
+            new Migration1(),
+            new Migration2(),
+            new Migration3(),
         };
 
         SimpleMigrationLocator sut = new(migrations);
 
-        IEnumerable<IMigration> result = sut.GetMigrations(_mockCollection.Object);
+        IEnumerable<IMigration> result = sut.GetMigrations(_migrationCollection);
 
+        Assert.Equal(3, result.Count());
+    }
 
+    [Fact]
+    public void GetMigrations_GivenMigrationsInDatabase_ShouldReturnUnappliedMigrations() {
+        List<IMigration> migrations = new() {
+            new Migration1(),
+            new Migration2(),
+            new Migration3(),
+        };
+
+        _migrationCollection.InsertOne(new() {
+            Name = migrations.First().Name,
+            Version = migrations.First().Version,
+        });
+
+        SimpleMigrationLocator sut = new(migrations);
+
+        IEnumerable<IMigration> result = sut.GetMigrations(_migrationCollection);
+
+        Assert.Equal(2, result.Count());
+    }
+
+    public void Dispose() {
+        _migrationCollection.DeleteMany(_ => true);
     }
 }
