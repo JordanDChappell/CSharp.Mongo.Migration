@@ -17,9 +17,9 @@ public class SimpleMigrationLocatorTests : DatabaseTest, IDisposable {
     [Fact]
     public void GetMigrations_GivenNoMigrationsInDatabase_ShouldReturnAllMigrations() {
         List<IMigration> migrations = new() {
-            new Migration1(),
-            new Migration2(),
-            new Migration3(),
+            new TestMigration1(),
+            new TestMigration2(),
+            new TestMigration3(),
         };
 
         SimpleMigrationLocator sut = new(migrations);
@@ -32,9 +32,9 @@ public class SimpleMigrationLocatorTests : DatabaseTest, IDisposable {
     [Fact]
     public void GetMigrations_GivenMigrationsInDatabase_ShouldReturnUnappliedMigrations() {
         List<IMigration> migrations = new() {
-            new Migration1(),
-            new Migration2(),
-            new Migration3(),
+            new TestMigration1(),
+            new TestMigration2(),
+            new TestMigration3(),
         };
 
         _migrationCollection.InsertOne(new() {
