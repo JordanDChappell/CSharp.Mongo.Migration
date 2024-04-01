@@ -34,7 +34,7 @@ public class MigrationRunner : IMigrationRunner {
             throw MigrationLocatorException();
 
         IEnumerable<IMigration> migrations = _migrationLocator
-            .GetMigrations(_migrationCollection)
+            .GetAvailableMigrations(_migrationCollection)
             .Where(m => !m.Skip);
         return await RunMigrationsAsync(migrations);
     }
@@ -43,7 +43,12 @@ public class MigrationRunner : IMigrationRunner {
         if (_migrationLocator is null)
             throw MigrationLocatorException();
 
-        MigrationDocument document = await _migrationCollection
+        IMigration? migration = _migrationLocator.GetMigration(version);
+
+        if (migration is null)
+            throw new ArgumentException("Unable to locate migration with provided version", nameof(version));
+
+        MigrationDocument? document = await _migrationCollection
             .Find(m => m.Version == version)
             .FirstOrDefaultAsync();
 
@@ -53,14 +58,8 @@ public class MigrationRunner : IMigrationRunner {
                 nameof(version)
             );
 
-        IMigration migration = _migrationLocator
-            .GetMigrations(_migrationCollection)
-            .FirstOrDefault(m => m.Version == version);
-
-        if (migration is null)
-            throw new ArgumentException("Unable to locate migration with provided version", nameof(version));
-
         await migration.DownAsync(_database);
+        await _migrationCollection.DeleteOneAsync(d => d.Version == version);
 
         return new() {
             Steps = new List<MigrationDocument>() { document },

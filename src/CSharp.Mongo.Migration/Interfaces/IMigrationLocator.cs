@@ -6,5 +6,6 @@ using MongoDB.Driver;
 namespace CSharp.Mongo.Migration;
 
 public interface IMigrationLocator {
-    public IEnumerable<IMigration> GetMigrations(IMongoCollection<MigrationDocument> collection);
+    public IEnumerable<IMigration> GetAvailableMigrations(IMongoCollection<MigrationDocument> collection);
+    public IMigration? GetMigration(string version);
 }

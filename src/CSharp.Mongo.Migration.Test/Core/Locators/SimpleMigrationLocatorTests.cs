@@ -24,7 +24,7 @@ public class SimpleMigrationLocatorTests : DatabaseTest, IDisposable {
 
         SimpleMigrationLocator sut = new(migrations);
 
-        IEnumerable<IMigration> result = sut.GetMigrations(_migrationCollection);
+        IEnumerable<IMigration> result = sut.GetAvailableMigrations(_migrationCollection);
 
         Assert.Equal(3, result.Count());
     }
@@ -44,7 +44,7 @@ public class SimpleMigrationLocatorTests : DatabaseTest, IDisposable {
 
         SimpleMigrationLocator sut = new(migrations);
 
-        IEnumerable<IMigration> result = sut.GetMigrations(_migrationCollection);
+        IEnumerable<IMigration> result = sut.GetAvailableMigrations(_migrationCollection);
 
         Assert.Equal(2, result.Count());
     }

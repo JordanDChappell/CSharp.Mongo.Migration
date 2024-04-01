@@ -15,14 +15,16 @@ public class AssemblyMigrationLocator : IMigrationLocator {
         _assembly = assembly;
     }
 
-    public IEnumerable<IMigration> GetMigrations(IMongoCollection<MigrationDocument> collection) {
-        IEnumerable<Type> types = _assembly.GetTypes().Where(IsMigration);
+    public IEnumerable<IMigration> GetAvailableMigrations(IMongoCollection<MigrationDocument> collection) {
         IEnumerable<MigrationDocument> documents = collection.Find(_ => true).ToList();
-
-        return types
-            .Select(t => (IMigration)Activator.CreateInstance(t))
-            .Where(m => !documents.Any(d => d.Version == m.Version));
+        return GetMigrationsFromAssembly().Where(m => !documents.Any(d => d.Version == m.Version));
     }
 
+    public IMigration? GetMigration(string version) =>
+        GetMigrationsFromAssembly().FirstOrDefault(m => m.Version == version);
+
     private bool IsMigration(Type type) => _migrationType.IsAssignableFrom(type) && type.IsClass && !type.IsAbstract;
+
+    private IEnumerable<IMigration> GetMigrationsFromAssembly() =>
+        _assembly.GetTypes().Where(IsMigration).Select(t => (IMigration)Activator.CreateInstance(t));
 }

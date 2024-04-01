@@ -8,8 +8,12 @@ public class TestMigration1 : IMigration {
     public string Name => "Migration 1";
     public string Version => "1993.10.05 migration1";
 
-    public Task DownAsync(IMongoDatabase database) {
-        throw new NotImplementedException();
+    public async Task DownAsync(IMongoDatabase database) {
+        var collection = database.GetCollection<TestDocumentV2>("Documents");
+
+        var update = Builders<TestDocumentV2>.Update.Rename(d => d.FullName, nameof(TestDocumentV1.Name));
+
+        await collection.UpdateManyAsync(_ => true, update);
     }
 
     public async Task UpAsync(IMongoDatabase database) {

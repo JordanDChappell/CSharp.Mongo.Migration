@@ -12,8 +12,10 @@ public class SimpleMigrationLocator : IMigrationLocator {
         _migrations = migrations;
     }
 
-    public IEnumerable<IMigration> GetMigrations(IMongoCollection<MigrationDocument> collection) {
+    public IEnumerable<IMigration> GetAvailableMigrations(IMongoCollection<MigrationDocument> collection) {
         IEnumerable<MigrationDocument> documents = collection.Find(_ => true).ToList();
         return _migrations.Where(m => !documents.Any(d => d.Version == m.Version));
     }
+
+    public IMigration? GetMigration(string version) => _migrations.FirstOrDefault(m => m.Version == version);
 }
