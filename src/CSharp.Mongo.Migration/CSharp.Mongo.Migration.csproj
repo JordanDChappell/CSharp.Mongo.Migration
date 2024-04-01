@@ -18,6 +18,7 @@
     <RepositoryUrl>https://github.com/JordanDChappell/CSharp.Mongo.Migration</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,6 +30,10 @@
     <Folder Include="Infrastructure\" />
     <Folder Include="Interfaces\" />
     <Folder Include="Models\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" />
   </ItemGroup>
 
 </Project>

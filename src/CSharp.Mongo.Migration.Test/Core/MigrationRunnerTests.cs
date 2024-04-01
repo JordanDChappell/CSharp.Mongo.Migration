@@ -4,11 +4,12 @@ using CSharp.Mongo.Migration.Interfaces;
 using CSharp.Mongo.Migration.Models;
 using CSharp.Mongo.Migration.Test.Infrastructure;
 
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace CSharp.Mongo.Migration.Test.Core;
 
-public class MigrationRunnerTests : DatabaseTest {
+public class MigrationRunnerTests : DatabaseTest, IDisposable {
     private readonly IMongoCollection<MigrationDocument> _migrationCollection;
     private readonly MigrationRunner _sut;
 
@@ -210,5 +211,10 @@ public class MigrationRunnerTests : DatabaseTest {
         var migrationDocuments = await _migrationCollection.Find(_ => true).ToListAsync();
 
         Assert.Empty(migrationDocuments);
+    }
+
+    public void Dispose() {
+        _migrationCollection.DeleteMany(_ => true);
+        _fixture.Database.GetCollection<BsonDocument>("Documents").DeleteMany(_ => true);
     }
 }
