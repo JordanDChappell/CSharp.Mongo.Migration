@@ -19,6 +19,7 @@
 			"jmrog.vscode-nuget-package-manager",
 			"ms-azure-devops.azure-pipelines",
 			"aaron-bond.better-comments",
+			"github.vscode-github-actions",
 		]
 	}
 }
