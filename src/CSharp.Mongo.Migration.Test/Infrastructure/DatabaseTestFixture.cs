@@ -1,24 +1,24 @@
 ﻿using CSharp.Mongo.Migration.Infrastructure;
 
-using Mongo2Go;
+using EphemeralMongo;
 
 using MongoDB.Driver;
 
 namespace CSharp.Mongo.Migration.Test.Infrastructure;
 
 public class DatabaseTestFixture : IDisposable {
-    private readonly MongoDbRunner _mongoDbRunner;
+    private readonly IMongoRunner _mongoDbRunner;
 
     public IMongoDatabase Database { get; set; }
     public string ConnectionString { get; private set; }
 
     public DatabaseTestFixture() {
-        _mongoDbRunner = MongoDbRunner.Start();
-        ConnectionString = $"{_mongoDbRunner.ConnectionString}_test";
+        _mongoDbRunner = MongoRunner.Run();
+        ConnectionString = $"{_mongoDbRunner.ConnectionString}/test";
         Database = DatabaseConnectionFactory.GetDatabase(ConnectionString);
     }
 
     public void Dispose() {
-        _mongoDbRunner?.Dispose();
+        _mongoDbRunner.Dispose();
     }
 }
