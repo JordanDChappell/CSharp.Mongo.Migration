@@ -6,6 +6,18 @@
     <RootNamespace>CSharp.Mongo.Migration</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PackageId>CSharp.Mongo.Migration</PackageId>
+    <Title>CSharp.Mongo.Migration</Title>
+    <Authors>Jordan Chappell</Authors>
+    <Copyright>Copyright (c) Jordan Chappell (2024).</Copyright>
+    <Description>
+      Simple script based MongoDB database migrations written and run in .NET.
+      GitHub: https://github.com/JordanDChappell/CSharp.Mongo.Migration
+    </Description>
+    <Tags>mongo, mongodb, migration, database</Tags>
+    <RepositoryUrl>https://github.com/JordanDChappell/CSharp.Mongo.Migration</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>

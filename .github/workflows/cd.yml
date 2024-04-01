@@ -1,15 +1,17 @@
 name: cd
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]
 
 jobs:
   cd:
     runs-on: ubuntu-latest
     env:
-        configuration: Release
+      projectPath: src/CSharp.Mongo.Migration/CSharp.Mongo.Migration.csproj
+      configuration: Release
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - name: Setup .NET 7.x
@@ -19,4 +21,8 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
       - name: Build
-        run: dotnet build --configuration $configuration
+        run: dotnet build --configuration $configuration /p:Version=${{vars.VERSION}} $projectPath
+      - name: Pack
+        run: dotnet pack --configuration $configuration --no-build /p:PackageVersion=${{vars.VERSION}} $projectPath --output .
+      - name: Push
+        run: dotnet nuget push "*.nupkg" --api-key ${{secrets.NUGET_KEY}} --source https://api.nuget.org/v3/index.jso
