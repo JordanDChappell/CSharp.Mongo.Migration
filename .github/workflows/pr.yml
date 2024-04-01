@@ -2,8 +2,8 @@ name: pr
 
 on:
   pull_request:
-    types:
-      - opened
+    branches:
+      - main
 
 jobs:
   pr:
