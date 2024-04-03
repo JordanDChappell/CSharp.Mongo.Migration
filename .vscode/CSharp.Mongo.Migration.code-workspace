@@ -9,7 +9,11 @@
 			"files.insertFinalNewline": true,
 		},
 		"csharp.format.enable": true,
+		"dotnet.server.useOmnisharp": false,
 		"editor.tabSize": 4,
+		"files.associations": {
+			"*.yml": "github-actions-workflow"
+		},
 		"yaml.format.singleQuote": true,
 	},
 	"extensions": {
