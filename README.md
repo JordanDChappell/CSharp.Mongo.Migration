@@ -67,3 +67,17 @@ There are a number of other libraries for MongoDB designed to be used in C#. Thi
 * Encourage `async` migration scripts
 
 Using other libraries we found that migration versions could clash when using number or SemVer based identifiers, our team uses GitFlow to achieve the development throughput and organisation that we require and often larger feature branches would clash when selecting version numbers.
+
+# Dependencies
+
+This library uses the following packages:
+
+- [C# MongoDB Driver](https://www.mongodb.com/docs/drivers/csharp/current/)
+
+## Development Dependencies
+
+We use the following libraries for testing / development purposes:
+
+- [AutoMoqCore](https://www.nuget.org/packages/AutoMoqCore/)
+- [EphemeralMongo7](https://www.nuget.org/packages/EphemeralMongo7)
+- [xunit](https://www.nuget.org/packages/xunit)
