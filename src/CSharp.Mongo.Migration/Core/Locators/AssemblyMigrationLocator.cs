@@ -18,6 +18,10 @@ public class AssemblyMigrationLocator : IMigrationLocator {
         _assembly = assembly;
     }
 
+    public AssemblyMigrationLocator(string assemblyFile) {
+        _assembly = Assembly.LoadFrom(assemblyFile);
+    }
+
     public IEnumerable<IMigration> GetAvailableMigrations(IMongoCollection<MigrationDocument> collection) {
         IEnumerable<MigrationDocument> documents = collection.Find(_ => true).ToList();
         return GetMigrationsFromAssembly().Where(m => !documents.Any(d => d.Version == m.Version));
