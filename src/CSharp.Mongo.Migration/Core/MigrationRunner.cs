@@ -6,6 +6,9 @@ using MongoDB.Driver;
 
 namespace CSharp.Mongo.Migration.Core;
 
+/// <summary>
+/// The core migration runner class, this is the public interface that is used to run and revert migrations.
+/// </summary>
 public class MigrationRunner : IMigrationRunner {
     private readonly IMongoDatabase _database;
     private readonly IMongoCollection<MigrationDocument> _migrationCollection;
