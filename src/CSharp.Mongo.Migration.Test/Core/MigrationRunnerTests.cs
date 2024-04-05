@@ -146,13 +146,13 @@ public class MigrationRunnerTests : DatabaseTest, IDisposable {
 
     [Fact]
     public async Task RestoreAsync_GivenNoMigrationLocatorInstance_ShouldThrowArgumentNullException() {
-        await Assert.ThrowsAsync<ArgumentNullException>(() => _sut.RestoreAsync(""));
+        await Assert.ThrowsAsync<ArgumentNullException>(() => _sut.RevertAsync(""));
     }
 
     [Fact]
     public async Task RestoreAsync_GivenCannotFindMigration_ShouldThrowArgumentException() {
         var exception = await Assert.ThrowsAsync<ArgumentException>(
-            () => _sut.RegisterLocator(new SimpleMigrationLocator(new List<IMigration>())).RestoreAsync("")
+            () => _sut.RegisterLocator(new SimpleMigrationLocator(new List<IMigration>())).RevertAsync("")
         );
         Assert.Contains("Unable to locate migration with provided version", exception.Message);
     }
@@ -163,7 +163,7 @@ public class MigrationRunnerTests : DatabaseTest, IDisposable {
         IMigrationLocator migrationLocator = new SimpleMigrationLocator(migrations);
 
         var exception = await Assert.ThrowsAsync<ArgumentException>(
-            () => _sut.RegisterLocator(migrationLocator).RestoreAsync(migrations.First().Version)
+            () => _sut.RegisterLocator(migrationLocator).RevertAsync(migrations.First().Version)
         );
         Assert.Contains(
             "Migration with provided version has not been recorded in the database",
@@ -193,7 +193,7 @@ public class MigrationRunnerTests : DatabaseTest, IDisposable {
 
         var result = await _sut
             .RegisterLocator(migrationLocator)
-            .RestoreAsync(migrations.First().Version);
+            .RevertAsync(migrations.First().Version);
 
         // Ensure result
         Assert.Single(result.Steps);

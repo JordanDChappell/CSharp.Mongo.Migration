@@ -39,7 +39,7 @@ public class MigrationRunner : IMigrationRunner {
         return await RunMigrationsAsync(migrations);
     }
 
-    public async Task<MigrationResult> RestoreAsync(string version) {
+    public async Task<MigrationResult> RevertAsync(string version) {
         if (_migrationLocator is null)
             throw MigrationLocatorException();
 
