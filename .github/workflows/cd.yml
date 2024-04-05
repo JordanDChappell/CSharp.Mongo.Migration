@@ -2,7 +2,7 @@ name: cd
 
 on:
   release:
-    types: [published]
+    types: [published]  
 
 jobs:
   cd:
@@ -21,8 +21,8 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
       - name: Build
-        run: dotnet build --configuration $configuration /p:Version=${{vars.VERSION}} $projectPath
+        run: dotnet build --configuration $configuration /p:Version=${{github.event.release.name}} $projectPath
       - name: Pack
-        run: dotnet pack --configuration $configuration --no-build /p:PackageVersion=${{vars.VERSION}} $projectPath --output .
+        run: dotnet pack --configuration $configuration --no-build /p:PackageVersion=${{github.event.release.name}} $projectPath --output .
       - name: Push
         run: dotnet nuget push "*.nupkg" --api-key ${{secrets.NUGET_KEY}} --source https://api.nuget.org/v3/index.json
