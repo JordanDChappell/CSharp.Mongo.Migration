@@ -5,7 +5,7 @@ using CSharp.Mongo.Migration.Models;
 
 using MongoDB.Driver;
 
-namespace CSharp.Mongo.Migration;
+namespace CSharp.Mongo.Migration.Core.Locators;
 
 /// <summary>
 /// Locate all concrete classes that implement the `IMigration` interface in an assembly.
