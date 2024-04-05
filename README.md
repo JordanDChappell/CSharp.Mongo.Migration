@@ -28,7 +28,7 @@ MigrationRunner runner = new("yourDatabaseConnectionString");
 
 ```csharp
 await runner
-    .RegisterLocator(new AssemblyMigrationLocator("Assembly.With.Your.Migrations"))
+    .RegisterLocator(new AssemblyMigrationLocator("Assembly.With.Your.Migrations.dll"))
     .RunAsync();
 ```
 
@@ -54,7 +54,7 @@ To revert or restore a migration run the `RevertAsync("version")` function on an
 ```csharp
 MigrationRunner runner = new("youDatabaseConnectionString");
 await runner
-    .RegisterLocator(new AssemblyMigrationLocator("Assembly.With.Migration.Version"))
+    .RegisterLocator(new AssemblyMigrationLocator("Assembly.With.Migration.Version.dll"))
     .RevertAsync("version");
 ```
 

@@ -5,7 +5,7 @@ using CSharp.Mongo.Migration.Models;
 
 using MongoDB.Driver;
 
-namespace CSharp.Mongo.Migration;
+namespace CSharp.Mongo.Migration.Core.Locators;
 
 /// <summary>
 /// Locate all concrete classes that implement the `IMigration` interface in an assembly.
@@ -16,6 +16,10 @@ public class AssemblyMigrationLocator : IMigrationLocator {
 
     public AssemblyMigrationLocator(Assembly assembly) {
         _assembly = assembly;
+    }
+
+    public AssemblyMigrationLocator(string assemblyFile) {
+        _assembly = Assembly.LoadFrom(assemblyFile);
     }
 
     public IEnumerable<IMigration> GetAvailableMigrations(IMongoCollection<MigrationDocument> collection) {

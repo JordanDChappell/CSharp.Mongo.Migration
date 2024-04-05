@@ -1,3 +1,5 @@
+using System.Reflection;
+
 using CSharp.Mongo.Migration.Core.Locators;
 using CSharp.Mongo.Migration.Interfaces;
 using CSharp.Mongo.Migration.Models;
@@ -7,22 +9,16 @@ using MongoDB.Driver;
 
 namespace CSharp.Mongo.Migration.Test.Core.Locators;
 
-public class SimpleMigrationLocatorTests : DatabaseTest, IDisposable {
+public class AssemblyMigrationLocatorTests : DatabaseTest, IDisposable {
     private readonly IMongoCollection<MigrationDocument> _migrationCollection;
 
-    public SimpleMigrationLocatorTests(DatabaseTestFixture fixture) : base(fixture) {
+    public AssemblyMigrationLocatorTests(DatabaseTestFixture fixture) : base(fixture) {
         _migrationCollection = fixture.Database.GetCollection<MigrationDocument>("_migrations");
     }
 
     [Fact]
-    public void GetMigrations_GivenNoMigrationsInDatabase_ShouldReturnAllMigrations() {
-        List<IMigration> migrations = new() {
-            new TestMigration1(),
-            new TestMigration2(),
-            new TestMigration3(),
-        };
-
-        ProvidedMigrationLocator sut = new(migrations);
+    public void GetMigrations_GivenAssemblyAndNoMigrationsInDatabase_ShouldReturnAllMigrations() {
+        AssemblyMigrationLocator sut = new(Assembly.GetExecutingAssembly());
 
         IEnumerable<IMigration> result = sut.GetAvailableMigrations(_migrationCollection);
 
@@ -30,7 +26,16 @@ public class SimpleMigrationLocatorTests : DatabaseTest, IDisposable {
     }
 
     [Fact]
-    public void GetMigrations_GivenMigrationsInDatabase_ShouldReturnUnappliedMigrations() {
+    public void GetMigrations_GivenAssemblyNameAndNoMigrationsInDatabase_ShouldReturnAllMigrations() {
+        AssemblyMigrationLocator sut = new("CSharp.Mongo.Migration.Test.dll");
+
+        IEnumerable<IMigration> result = sut.GetAvailableMigrations(_migrationCollection);
+
+        Assert.Equal(3, result.Count());
+    }
+
+    [Fact]
+    public void GetMigrations_GivenAssemblyAndMigrationsInDatabase_ShouldReturnUnappliedMigrations() {
         List<IMigration> migrations = new() {
             new TestMigration1(),
             new TestMigration2(),
@@ -42,7 +47,7 @@ public class SimpleMigrationLocatorTests : DatabaseTest, IDisposable {
             Version = migrations.First().Version,
         });
 
-        ProvidedMigrationLocator sut = new(migrations);
+        AssemblyMigrationLocator sut = new(Assembly.GetExecutingAssembly());
 
         IEnumerable<IMigration> result = sut.GetAvailableMigrations(_migrationCollection);
 
