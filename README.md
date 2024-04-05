@@ -1,5 +1,8 @@
 # CSharp Mongo Migrations
 
+![ci](https://github.com/JordanDChappell/CSharp.Mongo.Migration/actions/workflows/ci.yml/badge.svg?branch=main)
+![cd](https://github.com/JordanDChappell/CSharp.Mongo.Migration/actions/workflows/cd.yml/badge.svg?branch=main)
+
 Simple script based MongoDB database migrations written and run in .NET.
 
 `CSharp.Mongo.Migration` uses the [C# MongoDB Driver](https://www.mongodb.com/docs/drivers/csharp/current/) to update documents in script based single use migrations (rather than on-the-fly)
