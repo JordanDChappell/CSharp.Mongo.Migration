@@ -10,7 +10,7 @@ Simple script based MongoDB database migrations written and run in .NET.
 
 Nuget: https://www.nuget.org/packages/CSharp.Mongo.Migration
 
-Install the using the Visual Studio package manager or using the dotnet CLI:
+Install using the Visual Studio package manager or the dotnet CLI:
 
 ```
 dotnet add package CSharp.Mongo.Migration
@@ -45,17 +45,17 @@ An optional `bool Skip()` method can be defined that can be used to conditionall
 
 `UpAsync` will be run when the `MigrationRunner.RunAsync` method is called.
 
-`DownAsync` will be called when the `MigrationRunner.RestoreAsync(string)` method is called, if you don't expect to revert a migration, simply have this method throw an exception.
+`DownAsync` will be called when the `MigrationRunner.RevertAsync(string)` method is called, if you don't expect to revert a migration, simply have this method throw an exception.
 
 ## Restoring Migrations
 
-To revert or restore a migration run the `RestoreAsync("version")` function on an instance of the `MigrationRunner` class
+To revert or restore a migration run the `RevertAsync("version")` function on an instance of the `MigrationRunner` class
 
 ```csharp
 MigrationRunner runner = new("youDatabaseConnectionString");
 await runner
     .RegisterLocator(new AssemblyMigrationLocator("Assembly.With.Migration.Version"))
-    .RestoreAsync("version");
+    .RevertAsync("version");
 ```
 
 # Why Create Another Library?
