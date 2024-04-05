@@ -7,10 +7,10 @@ using MongoDB.Driver;
 
 namespace CSharp.Mongo.Migration.Test.Core.Locators;
 
-public class SimpleMigrationLocatorTests : DatabaseTest, IDisposable {
+public class ProvidedMigrationLocatorTests : DatabaseTest, IDisposable {
     private readonly IMongoCollection<MigrationDocument> _migrationCollection;
 
-    public SimpleMigrationLocatorTests(DatabaseTestFixture fixture) : base(fixture) {
+    public ProvidedMigrationLocatorTests(DatabaseTestFixture fixture) : base(fixture) {
         _migrationCollection = fixture.Database.GetCollection<MigrationDocument>("_migrations");
     }
 
