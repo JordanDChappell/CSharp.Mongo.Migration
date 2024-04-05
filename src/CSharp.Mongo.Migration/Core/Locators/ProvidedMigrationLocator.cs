@@ -5,10 +5,13 @@ using MongoDB.Driver;
 
 namespace CSharp.Mongo.Migration.Core.Locators;
 
-public class SimpleMigrationLocator : IMigrationLocator {
+/// <summary>
+/// Direct provided migration locator, accepts a collection of `IMigration` instances.
+/// </summary>
+public class ProvidedMigrationLocator : IMigrationLocator {
     private readonly IEnumerable<IMigration> _migrations;
 
-    public SimpleMigrationLocator(IEnumerable<IMigration> migrations) {
+    public ProvidedMigrationLocator(IEnumerable<IMigration> migrations) {
         _migrations = migrations;
     }
 

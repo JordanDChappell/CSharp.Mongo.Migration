@@ -22,7 +22,7 @@ public class SimpleMigrationLocatorTests : DatabaseTest, IDisposable {
             new TestMigration3(),
         };
 
-        SimpleMigrationLocator sut = new(migrations);
+        ProvidedMigrationLocator sut = new(migrations);
 
         IEnumerable<IMigration> result = sut.GetAvailableMigrations(_migrationCollection);
 
@@ -42,7 +42,7 @@ public class SimpleMigrationLocatorTests : DatabaseTest, IDisposable {
             Version = migrations.First().Version,
         });
 
-        SimpleMigrationLocator sut = new(migrations);
+        ProvidedMigrationLocator sut = new(migrations);
 
         IEnumerable<IMigration> result = sut.GetAvailableMigrations(_migrationCollection);
 

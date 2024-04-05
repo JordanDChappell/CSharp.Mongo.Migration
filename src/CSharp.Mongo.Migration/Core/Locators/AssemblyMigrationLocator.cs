@@ -7,6 +7,9 @@ using MongoDB.Driver;
 
 namespace CSharp.Mongo.Migration;
 
+/// <summary>
+/// Locate all concrete classes that implement the `IMigration` interface in an assembly.
+/// </summary>
 public class AssemblyMigrationLocator : IMigrationLocator {
     private readonly Assembly _assembly;
     private readonly Type _migrationType = typeof(IMigration);
