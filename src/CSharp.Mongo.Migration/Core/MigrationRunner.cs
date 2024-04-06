@@ -39,6 +39,7 @@ public class MigrationRunner : IMigrationRunner {
         IEnumerable<IMigration> migrations = _migrationLocator
             .GetAvailableMigrations(_migrationCollection)
             .Where(m => !m.Skip);
+
         return await RunMigrationsAsync(migrations);
     }
 
@@ -81,14 +82,41 @@ public class MigrationRunner : IMigrationRunner {
     private async Task<MigrationResult> RunMigrationsAsync(IEnumerable<IMigration> migrations) {
         List<MigrationDocument> steps = new();
 
-        foreach (IMigration migration in migrations) {
+        // Separate regular from ordered migrations - run these in separate blocks
+        IEnumerable<IOrderedMigration> orderedMigrations = migrations.OfType<IOrderedMigration>();
+        IEnumerable<IMigration> basicMigrations = migrations.Where(m => m is not IOrderedMigration);
+
+        foreach (IMigration migration in basicMigrations) {
             MigrationDocument document = await RunMigrationAsync(migration);
             steps.Add(document);
         }
 
+        steps.AddRange(await RunOrderedMigrationsAsync(orderedMigrations));
+
         return new() {
             Steps = steps,
         };
+    }
+
+    private async Task<IEnumerable<MigrationDocument>> RunOrderedMigrationsAsync(
+        IEnumerable<IOrderedMigration> migrations
+    ) {
+        List<MigrationDocument> steps = new();
+
+        do {
+            List<MigrationDocument> migrationDocuments = await _migrationCollection.Find(_ => true).ToListAsync();
+            IEnumerable<IOrderedMigration> migrationsToRun = MigrationRunnerHelper.FindMigrationsWhereDependenciesAreMet(
+                migrations.Where(m => !steps.Any(s => s.Version == m.Version)),
+                migrationDocuments
+            );
+
+            foreach (IMigration migration in migrationsToRun) {
+                MigrationDocument document = await RunMigrationAsync(migration);
+                steps.Add(document);
+            }
+        } while (MigrationRunnerHelper.AnyMigrationsLeftToRun(migrations, steps));
+
+        return steps;
     }
 
     private ArgumentNullException MigrationLocatorException() => new(

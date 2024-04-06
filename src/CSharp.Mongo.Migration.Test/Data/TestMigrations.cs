@@ -2,7 +2,7 @@
 
 using MongoDB.Driver;
 
-namespace CSharp.Mongo.Migration.Test;
+namespace CSharp.Mongo.Migration.Test.Data;
 
 public class TestMigration1 : IMigration {
     public string Name => "Migration 1";
@@ -62,6 +62,38 @@ public class TestMigration3 : IMigration {
     }
 
     public Task UpAsync(IMongoDatabase database) {
+        return Task.CompletedTask;
+    }
+}
+
+public class TestMigration4 : IOrderedMigration {
+    public string Name => "Migration 4";
+    public string Version => "2024.01.01 migration4";
+    public IEnumerable<string> DependsOn => new List<string>() {
+        "1993.10.05 migration1"
+    };
+
+    public Task DownAsync(IMongoDatabase database) {
         throw new NotImplementedException();
+    }
+
+    public Task UpAsync(IMongoDatabase database) {
+        return Task.CompletedTask;
+    }
+}
+
+public class TestMigration5 : IOrderedMigration {
+    public string Name => "Migration 5";
+    public string Version => "2024.02.01 migration5";
+    public IEnumerable<string> DependsOn => new List<string>() {
+        "2024.01.01 migration4"
+    };
+
+    public Task DownAsync(IMongoDatabase database) {
+        throw new NotImplementedException();
+    }
+
+    public Task UpAsync(IMongoDatabase database) {
+        return Task.CompletedTask;
     }
 }

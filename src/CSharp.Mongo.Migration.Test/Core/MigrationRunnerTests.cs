@@ -1,7 +1,10 @@
-﻿using CSharp.Mongo.Migration.Core;
+﻿using System.Reflection;
+
+using CSharp.Mongo.Migration.Core;
 using CSharp.Mongo.Migration.Core.Locators;
 using CSharp.Mongo.Migration.Interfaces;
 using CSharp.Mongo.Migration.Models;
+using CSharp.Mongo.Migration.Test.Data;
 using CSharp.Mongo.Migration.Test.Infrastructure;
 
 using MongoDB.Bson;
@@ -142,6 +145,21 @@ public class MigrationRunnerTests : DatabaseTest, IDisposable {
         Assert.Equal(2, migrations.Count);
         Assert.Equal(firstMigration.Version, migrations.First().Version);
         Assert.Equal(secondMigration.Version, migrations.Last().Version);
+    }
+
+    [Fact]
+    public async void RunAsync_GivenOrderedMigrations_ShouldRunAllMigrationsInOrder() {
+        var result = await _sut
+            .RegisterLocator(new AssemblyMigrationLocator(Assembly.GetExecutingAssembly()))
+            .RunAsync();
+
+        Assert.Equal(5, result.Steps.Count());
+        Assert.Equal("Migration 4", result.Steps.ElementAt(3).Name);
+        Assert.Equal("Migration 5", result.Steps.ElementAt(4).Name);
+
+        var migrations = await _migrationCollection.Find(_ => true).ToListAsync();
+
+        Assert.Equal(5, migrations.Count);
     }
 
     [Fact]

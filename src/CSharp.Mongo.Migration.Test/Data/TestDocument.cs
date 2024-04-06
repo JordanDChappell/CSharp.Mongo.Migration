@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson;
 
-namespace CSharp.Mongo.Migration.Test;
+namespace CSharp.Mongo.Migration.Test.Data;
 
 public class TestDocumentV1 {
     public ObjectId Id { get; set; }
