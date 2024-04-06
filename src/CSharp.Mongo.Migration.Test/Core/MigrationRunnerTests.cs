@@ -2,6 +2,7 @@
 using CSharp.Mongo.Migration.Core.Locators;
 using CSharp.Mongo.Migration.Interfaces;
 using CSharp.Mongo.Migration.Models;
+using CSharp.Mongo.Migration.Test.Data;
 using CSharp.Mongo.Migration.Test.Infrastructure;
 
 using MongoDB.Bson;

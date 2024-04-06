@@ -39,6 +39,7 @@ public class MigrationRunner : IMigrationRunner {
         IEnumerable<IMigration> migrations = _migrationLocator
             .GetAvailableMigrations(_migrationCollection)
             .Where(m => !m.Skip);
+
         return await RunMigrationsAsync(migrations);
     }
 
@@ -78,41 +79,44 @@ public class MigrationRunner : IMigrationRunner {
         return document;
     }
 
-    // TODO: This could be more efficient, sorting the migrations based on dependencies would require less iteration
     private async Task<MigrationResult> RunMigrationsAsync(IEnumerable<IMigration> migrations) {
         List<MigrationDocument> steps = new();
-        List<IOrderedMigration> waitingForDependencies = new();
 
-        foreach (IMigration migration in migrations) {
-            bool shouldRunMigration = true;
+        // Separate regular from ordered migrations - run these in separate blocks
+        IEnumerable<IOrderedMigration> orderedMigrations = migrations.OfType<IOrderedMigration>();
+        IEnumerable<IMigration> basicMigrations = migrations.Except(orderedMigrations);
 
-            if (migration is IOrderedMigration orderedMigration) {
-                // Check to see if dependencies have run
-                var dependentMigrations = await _migrationCollection
-                    .Find(m => orderedMigration.DependsOn.Contains(m.Version))
-                    .ToListAsync();
-
-                // If not, delay the migration
-                if (orderedMigration.DependsOn.Count() != dependentMigrations.Count) {
-                    shouldRunMigration = false;
-                    waitingForDependencies.Add(orderedMigration);
-                }
-            }
-
-            if (shouldRunMigration) {
-                MigrationDocument document = await RunMigrationAsync(migration);
-                steps.Add(document);
-            }
+        foreach (IMigration migration in basicMigrations) {
+            MigrationDocument document = await RunMigrationAsync(migration);
+            steps.Add(document);
         }
 
-        if (waitingForDependencies.Count > 0) {
-            var result = await RunMigrationsAsync(waitingForDependencies);
-            steps.AddRange(result.Steps);
-        }
+        steps.AddRange(await RunOrderedMigrationsAsync(orderedMigrations));
 
         return new() {
             Steps = steps,
         };
+    }
+
+    private async Task<IEnumerable<MigrationDocument>> RunOrderedMigrationsAsync(
+        IEnumerable<IOrderedMigration> migrations
+    ) {
+        List<MigrationDocument> steps = new();
+
+        do {
+            List<MigrationDocument> migrationDocuments = await _migrationCollection.Find(_ => true).ToListAsync();
+            IEnumerable<IOrderedMigration> migrationsToRun = MigrationRunnerHelper.FindMigrationsWhereDependenciesAreMet(
+                migrations,
+                migrationDocuments
+            );
+
+            foreach (IMigration migration in migrationsToRun) {
+                MigrationDocument document = await RunMigrationAsync(migration);
+                steps.Add(document);
+            }
+        } while (MigrationRunnerHelper.AnyMigrationsLeftToRun(migrations, steps));
+
+        return steps;
     }
 
     private ArgumentNullException MigrationLocatorException() => new(

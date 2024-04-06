@@ -3,6 +3,7 @@ using System.Reflection;
 using CSharp.Mongo.Migration.Core.Locators;
 using CSharp.Mongo.Migration.Interfaces;
 using CSharp.Mongo.Migration.Models;
+using CSharp.Mongo.Migration.Test.Data;
 using CSharp.Mongo.Migration.Test.Infrastructure;
 
 using MongoDB.Driver;
@@ -22,7 +23,7 @@ public class AssemblyMigrationLocatorTests : DatabaseTest, IDisposable {
 
         IEnumerable<IMigration> result = sut.GetAvailableMigrations(_migrationCollection);
 
-        Assert.Equal(3, result.Count());
+        Assert.Equal(5, result.Count());
     }
 
     [Fact]
@@ -31,7 +32,7 @@ public class AssemblyMigrationLocatorTests : DatabaseTest, IDisposable {
 
         IEnumerable<IMigration> result = sut.GetAvailableMigrations(_migrationCollection);
 
-        Assert.Equal(3, result.Count());
+        Assert.Equal(5, result.Count());
     }
 
     [Fact]
@@ -51,7 +52,7 @@ public class AssemblyMigrationLocatorTests : DatabaseTest, IDisposable {
 
         IEnumerable<IMigration> result = sut.GetAvailableMigrations(_migrationCollection);
 
-        Assert.Equal(2, result.Count());
+        Assert.Equal(4, result.Count());
     }
 
     public void Dispose() {
