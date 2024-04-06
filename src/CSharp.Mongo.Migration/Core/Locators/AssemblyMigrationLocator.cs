@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 
+using CSharp.Mongo.Migration.Helpers;
 using CSharp.Mongo.Migration.Interfaces;
 using CSharp.Mongo.Migration.Models;
 
@@ -23,8 +24,8 @@ public class AssemblyMigrationLocator : IMigrationLocator {
     }
 
     public IEnumerable<IMigration> GetAvailableMigrations(IMongoCollection<MigrationDocument> collection) {
-        IEnumerable<MigrationDocument> documents = collection.Find(_ => true).ToList();
-        return GetMigrationsFromAssembly().Where(m => !documents.Any(d => d.Version == m.Version));
+        IEnumerable<IMigration> migrations = GetMigrationsFromAssembly();
+        return MigrationLocatorHelper.FilterCompletedMigrations(collection, migrations);
     }
 
     public IMigration? GetMigration(string version) =>
