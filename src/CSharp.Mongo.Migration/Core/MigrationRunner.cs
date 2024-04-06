@@ -84,7 +84,7 @@ public class MigrationRunner : IMigrationRunner {
 
         // Separate regular from ordered migrations - run these in separate blocks
         IEnumerable<IOrderedMigration> orderedMigrations = migrations.OfType<IOrderedMigration>();
-        IEnumerable<IMigration> basicMigrations = migrations.Except(orderedMigrations);
+        IEnumerable<IMigration> basicMigrations = migrations.Where(m => m is not IOrderedMigration);
 
         foreach (IMigration migration in basicMigrations) {
             MigrationDocument document = await RunMigrationAsync(migration);
@@ -106,7 +106,7 @@ public class MigrationRunner : IMigrationRunner {
         do {
             List<MigrationDocument> migrationDocuments = await _migrationCollection.Find(_ => true).ToListAsync();
             IEnumerable<IOrderedMigration> migrationsToRun = MigrationRunnerHelper.FindMigrationsWhereDependenciesAreMet(
-                migrations,
+                migrations.Where(m => !steps.Any(s => s.Version == m.Version)),
                 migrationDocuments
             );
 

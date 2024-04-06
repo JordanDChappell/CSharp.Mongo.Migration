@@ -62,7 +62,7 @@ public class TestMigration3 : IMigration {
     }
 
     public Task UpAsync(IMongoDatabase database) {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 }
 
@@ -78,7 +78,7 @@ public class TestMigration4 : IOrderedMigration {
     }
 
     public Task UpAsync(IMongoDatabase database) {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 }
 
@@ -94,6 +94,6 @@ public class TestMigration5 : IOrderedMigration {
     }
 
     public Task UpAsync(IMongoDatabase database) {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 }
