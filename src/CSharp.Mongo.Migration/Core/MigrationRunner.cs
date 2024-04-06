@@ -78,12 +78,36 @@ public class MigrationRunner : IMigrationRunner {
         return document;
     }
 
+    // TODO: This could be more efficient, sorting the migrations based on dependencies would require less iteration
     private async Task<MigrationResult> RunMigrationsAsync(IEnumerable<IMigration> migrations) {
         List<MigrationDocument> steps = new();
+        List<IOrderedMigration> waitingForDependencies = new();
 
         foreach (IMigration migration in migrations) {
-            MigrationDocument document = await RunMigrationAsync(migration);
-            steps.Add(document);
+            bool shouldRunMigration = true;
+
+            if (migration is IOrderedMigration orderedMigration) {
+                // Check to see if dependencies have run
+                var dependentMigrations = await _migrationCollection
+                    .Find(m => orderedMigration.DependsOn.Contains(m.Version))
+                    .ToListAsync();
+
+                // If not, delay the migration
+                if (orderedMigration.DependsOn.Count() != dependentMigrations.Count) {
+                    shouldRunMigration = false;
+                    waitingForDependencies.Add(orderedMigration);
+                }
+            }
+
+            if (shouldRunMigration) {
+                MigrationDocument document = await RunMigrationAsync(migration);
+                steps.Add(document);
+            }
+        }
+
+        if (waitingForDependencies.Count > 0) {
+            var result = await RunMigrationsAsync(waitingForDependencies);
+            steps.AddRange(result.Steps);
         }
 
         return new() {
