@@ -50,6 +50,12 @@ An optional `bool Skip()` method can be defined that can be used to conditionall
 
 `DownAsync` will be called when the `MigrationRunner.RevertAsync(string)` method is called, if you don't expect to revert a migration, simply have this method throw an exception.
 
+### Explicit Order
+
+If a migration requires or depends on another migration script, the `IOrderedMigration` interface can be used and it's `DependsOn` property implemented to provide a version dependencies between migrations.
+
+**Note:** Circular dependency / valid graph checks are not implemented in the library at this time, be careful defining depencies to avoid issues.
+
 ## Restoring Migrations
 
 To revert or restore a migration run the `RevertAsync("version")` function on an instance of the `MigrationRunner` class
