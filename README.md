@@ -2,6 +2,7 @@
 
 ![ci](https://github.com/JordanDChappell/CSharp.Mongo.Migration/actions/workflows/ci.yml/badge.svg?branch=main)
 ![cd](https://github.com/JordanDChappell/CSharp.Mongo.Migration/actions/workflows/cd.yml/badge.svg?branch=main)
+![pr](https://github.com/JordanDChappell/CSharp.Mongo.Migration/actions/workflows/pr.yml/badge.svg?branch=main)
 
 Simple script based MongoDB database migrations written and run in .NET.
 
