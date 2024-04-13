@@ -92,5 +92,6 @@ This library uses the following packages:
 We use the following libraries for testing / development purposes:
 
 - [AutoMoqCore](https://www.nuget.org/packages/AutoMoqCore/)
+- [DefaultDocumentation](https://github.com/Doraku/DefaultDocumentation)
 - [EphemeralMongo7](https://www.nuget.org/packages/EphemeralMongo7)
 - [xunit](https://www.nuget.org/packages/xunit)
