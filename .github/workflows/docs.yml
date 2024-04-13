@@ -35,7 +35,7 @@ jobs:
       - name: Push to Wiki
         uses: SwiftDocOrg/github-wiki-publish-action@v1
         with:
-          path: $documentationDirectory
+          path: "$documentationDirectory"
         env:
           GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_REPO_TOKEN }}
 
