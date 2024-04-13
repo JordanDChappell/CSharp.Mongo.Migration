@@ -1,7 +1,7 @@
 ﻿using CSharp.Mongo.Migration.Interfaces;
 using CSharp.Mongo.Migration.Models;
 
-namespace CSharp.Mongo.Migration;
+namespace CSharp.Mongo.Migration.Helpers;
 
 /// <summary>
 /// Common helper methods used by the `MigrationRunner` class.

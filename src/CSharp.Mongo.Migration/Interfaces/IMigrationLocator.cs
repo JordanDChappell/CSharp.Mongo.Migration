@@ -3,7 +3,7 @@ using CSharp.Mongo.Migration.Models;
 
 using MongoDB.Driver;
 
-namespace CSharp.Mongo.Migration;
+namespace CSharp.Mongo.Migration.Interfaces;
 
 /// <summary>
 /// Migration locator contract, provides methods to retrieve migrations from different contexts.

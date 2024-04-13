@@ -1,0 +1,43 @@
+name: docs
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    env:
+      configuration: Release
+      documentationDirectory: Documentation
+      framework: netstandard2.1
+      projectName: CSharp.Mongo.Migration
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET 7.x
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.x'
+      - name: Install tools
+        run: dotnet tool install DefaultDocumentation.Console -g
+      - name: Build solution
+        run: dotnet build --configuration $configuration
+      - name: Generate markdown
+        run: |
+          defaultdocumentation \
+            -o $documentationDirectory \
+            -a src/$projectName/bin/$configuration/$framework/$projectName.dll \
+            -n API \
+            -g Assembly \
+            --FileNameFactory Name
+      - name: Push to Wiki
+        uses: SwiftDocOrg/github-wiki-publish-action@v1
+        with:
+          path: $documentationDirectory
+        env:
+          GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_REPO_TOKEN }}
+
+
+      
