@@ -71,6 +71,12 @@ await runner
     .RevertAsync("version");
 ```
 
+### Migration Documents
+
+When a migration has been applied a new document will be created in the target database in a collection named `_migrations` by default. These documents are used to track which migrations have been applied and when they were applied.
+
+**Note:** to override the default collection name, use a constructor that includes the `migrationCollectionName` parameter, or set the public `MigrationRunner.MigrationCollectionName` property.
+
 ## Why Create Another Library?
 
 There are a number of other libraries for MongoDB designed to be used in C#. This library was written out of necessity to be used in a large development team with fairly sizeable database instances. There are some use cases that this library caters to that others do not:
