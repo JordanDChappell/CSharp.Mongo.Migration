@@ -22,10 +22,23 @@ public class MigrationRunner : IMigrationRunner {
         _migrationCollection = _database.GetCollection<MigrationDocument>(MigrationCollectionName);
     }
 
+    public MigrationRunner(string connectionString, string migrationCollectionName) {
+        _database = DatabaseConnectionFactory.GetDatabase(connectionString);
+        _migrationCollection = _database.GetCollection<MigrationDocument>(MigrationCollectionName);
+        MigrationCollectionName = migrationCollectionName;
+    }
+
     public MigrationRunner(string connectionString, IMigrationLocator migrationLocator) {
         _database = DatabaseConnectionFactory.GetDatabase(connectionString);
         _migrationCollection = _database.GetCollection<MigrationDocument>(MigrationCollectionName);
         _migrationLocator = migrationLocator;
+    }
+
+    public MigrationRunner(string connectionString, string migrationCollectionName, IMigrationLocator migrationLocator) {
+        _database = DatabaseConnectionFactory.GetDatabase(connectionString);
+        _migrationCollection = _database.GetCollection<MigrationDocument>(MigrationCollectionName);
+        _migrationLocator = migrationLocator;
+        MigrationCollectionName = migrationCollectionName;
     }
 
     public IMigrationRunner RegisterLocator(IMigrationLocator locator) {
