@@ -17,7 +17,7 @@ public class ProvidedMigrationLocatorTests : DatabaseTest, IDisposable {
 
     [Fact]
     public void GetMigrations_GivenNoMigrationsInDatabase_ShouldReturnAllMigrations() {
-        List<IMigration> migrations = new() {
+        List<IAsyncMigration> migrations = new() {
             new TestMigration1(),
             new TestMigration2(),
             new TestMigration3(),
@@ -25,14 +25,14 @@ public class ProvidedMigrationLocatorTests : DatabaseTest, IDisposable {
 
         ProvidedMigrationLocator sut = new(migrations);
 
-        IEnumerable<IMigration> result = sut.GetAvailableMigrations(_migrationCollection);
+        IEnumerable<IMigrationBase> result = sut.GetAvailableMigrations(_migrationCollection);
 
         Assert.Equal(3, result.Count());
     }
 
     [Fact]
     public void GetMigrations_GivenMigrationsInDatabase_ShouldReturnUnappliedMigrations() {
-        List<IMigration> migrations = new() {
+        List<IAsyncMigration> migrations = new() {
             new TestMigration1(),
             new TestMigration2(),
             new TestMigration3(),
@@ -45,7 +45,7 @@ public class ProvidedMigrationLocatorTests : DatabaseTest, IDisposable {
 
         ProvidedMigrationLocator sut = new(migrations);
 
-        IEnumerable<IMigration> result = sut.GetAvailableMigrations(_migrationCollection);
+        IEnumerable<IMigrationBase> result = sut.GetAvailableMigrations(_migrationCollection);
 
         Assert.Equal(2, result.Count());
     }

@@ -4,7 +4,7 @@ using MongoDB.Driver;
 
 namespace CSharp.Mongo.Migration.Test.Data;
 
-public class TestMigration1 : IMigration {
+public class TestMigration1 : IAsyncMigration {
     public string Name => "Migration 1";
     public string Version => "1993.10.05 migration1";
 
@@ -25,7 +25,7 @@ public class TestMigration1 : IMigration {
     }
 }
 
-public class TestMigration2 : IMigration {
+public class TestMigration2 : IAsyncMigration {
     public string Name => "Migration 2";
     public string Version => "1993.10.07 migration2";
 
@@ -53,7 +53,7 @@ public class TestMigration2 : IMigration {
     }
 }
 
-public class TestMigration3 : IMigration {
+public class TestMigration3 : IAsyncMigration {
     public string Name => "Migration 3";
     public string Version => "1993.10.09 migration3";
 
@@ -66,7 +66,7 @@ public class TestMigration3 : IMigration {
     }
 }
 
-public class TestMigration4 : IOrderedMigration {
+public class TestMigration4 : IAsyncMigration, IOrderedMigration {
     public string Name => "Migration 4";
     public string Version => "2024.01.01 migration4";
     public IEnumerable<string> DependsOn => new List<string>() {
@@ -82,7 +82,7 @@ public class TestMigration4 : IOrderedMigration {
     }
 }
 
-public class TestMigration5 : IOrderedMigration {
+public class TestMigration5 : IAsyncMigration, IOrderedMigration {
     public string Name => "Migration 5";
     public string Version => "2024.02.01 migration5";
     public IEnumerable<string> DependsOn => new List<string>() {
