@@ -12,7 +12,7 @@ public static class MigrationRunnerHelper {
     /// </summary>
     /// <param name="migrations">Collection of `IOrderedMigration` instances.</param>
     /// <param name="completedMigrations">Collection of recorded `MigrationDocument` instances.</param>
-    /// <returns>A collection of `IMigration` instances that can be run based on dependencies.</returns>
+    /// <returns>A collection of `IOrderedMigration` instances that can be run based on dependencies.</returns>
     public static IEnumerable<IOrderedMigration> FindMigrationsWhereDependenciesAreMet(
         IEnumerable<IOrderedMigration> migrations,
         IEnumerable<MigrationDocument> completedMigrations
@@ -36,7 +36,7 @@ public static class MigrationRunnerHelper {
         return expectedVersions.Except(completedVersions).Any();
     }
 
-    private static List<string> GetMigrationVersions(IEnumerable<IMigration> migrations) =>
+    private static List<string> GetMigrationVersions(IEnumerable<IMigrationBase> migrations) =>
         migrations.Select(m => m.Version).ToList();
 
     private static List<string?> GetDocumentVersions(IEnumerable<MigrationDocument> documents) =>

@@ -9,11 +9,11 @@ using MongoDB.Driver;
 namespace CSharp.Mongo.Migration.Core.Locators;
 
 /// <summary>
-/// Locate all concrete classes that implement the `IMigration` interface in an assembly.
+/// Locate all concrete classes that implement the `IMigrationBase` interface in an assembly.
 /// </summary>
 public class AssemblyMigrationLocator : IMigrationLocator {
     private readonly Assembly _assembly;
-    private readonly Type _migrationType = typeof(IMigration);
+    private readonly Type _migrationType = typeof(IMigrationBase);
 
     public AssemblyMigrationLocator(Assembly assembly) {
         _assembly = assembly;
@@ -23,16 +23,16 @@ public class AssemblyMigrationLocator : IMigrationLocator {
         _assembly = Assembly.LoadFrom(assemblyFile);
     }
 
-    public IEnumerable<IMigration> GetAvailableMigrations(IMongoCollection<MigrationDocument> collection) {
-        IEnumerable<IMigration> migrations = GetMigrationsFromAssembly();
+    public IEnumerable<IMigrationBase> GetAvailableMigrations(IMongoCollection<MigrationDocument> collection) {
+        IEnumerable<IMigrationBase> migrations = GetMigrationsFromAssembly();
         return MigrationLocatorHelper.FilterCompletedMigrations(collection, migrations);
     }
 
-    public IMigration? GetMigration(string version) =>
+    public IMigrationBase? GetMigration(string version) =>
         GetMigrationsFromAssembly().FirstOrDefault(m => m.Version == version);
 
     private bool IsMigration(Type type) => _migrationType.IsAssignableFrom(type) && type.IsClass && !type.IsAbstract;
 
-    private IEnumerable<IMigration> GetMigrationsFromAssembly() =>
-        _assembly.GetTypes().Where(IsMigration).Select(t => (IMigration)Activator.CreateInstance(t));
+    private IEnumerable<IMigrationBase> GetMigrationsFromAssembly() =>
+        _assembly.GetTypes().Where(IsMigration).Select(t => (IMigrationBase)Activator.CreateInstance(t));
 }

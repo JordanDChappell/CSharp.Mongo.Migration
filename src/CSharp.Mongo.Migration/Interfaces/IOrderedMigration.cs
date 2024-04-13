@@ -1,9 +1,9 @@
 ﻿namespace CSharp.Mongo.Migration.Interfaces;
 
 /// <summary>
-/// Ordered migration script contract, uses `IMigration` as it's base.
+/// Ordered migration script contract, uses `IMigrationBase` as it's base.
 /// </summary>
-public interface IOrderedMigration : IMigration {
+public interface IOrderedMigration : IMigrationBase {
     /// <summary>
     /// A collection of migration versions that the current migration script depends on.
     /// </summary>

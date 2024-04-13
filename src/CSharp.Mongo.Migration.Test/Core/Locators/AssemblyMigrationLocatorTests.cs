@@ -21,7 +21,7 @@ public class AssemblyMigrationLocatorTests : DatabaseTest, IDisposable {
     public void GetMigrations_GivenAssemblyAndNoMigrationsInDatabase_ShouldReturnAllMigrations() {
         AssemblyMigrationLocator sut = new(Assembly.GetExecutingAssembly());
 
-        IEnumerable<IMigration> result = sut.GetAvailableMigrations(_migrationCollection);
+        IEnumerable<IMigrationBase> result = sut.GetAvailableMigrations(_migrationCollection);
 
         Assert.Equal(5, result.Count());
     }
@@ -30,14 +30,14 @@ public class AssemblyMigrationLocatorTests : DatabaseTest, IDisposable {
     public void GetMigrations_GivenAssemblyNameAndNoMigrationsInDatabase_ShouldReturnAllMigrations() {
         AssemblyMigrationLocator sut = new("CSharp.Mongo.Migration.Test.dll");
 
-        IEnumerable<IMigration> result = sut.GetAvailableMigrations(_migrationCollection);
+        IEnumerable<IMigrationBase> result = sut.GetAvailableMigrations(_migrationCollection);
 
         Assert.Equal(5, result.Count());
     }
 
     [Fact]
     public void GetMigrations_GivenAssemblyAndMigrationsInDatabase_ShouldReturnUnappliedMigrations() {
-        List<IMigration> migrations = new() {
+        List<IAsyncMigration> migrations = new() {
             new TestMigration1(),
             new TestMigration2(),
             new TestMigration3(),
@@ -50,7 +50,7 @@ public class AssemblyMigrationLocatorTests : DatabaseTest, IDisposable {
 
         AssemblyMigrationLocator sut = new(Assembly.GetExecutingAssembly());
 
-        IEnumerable<IMigration> result = sut.GetAvailableMigrations(_migrationCollection);
+        IEnumerable<IMigrationBase> result = sut.GetAvailableMigrations(_migrationCollection);
 
         Assert.Equal(4, result.Count());
     }

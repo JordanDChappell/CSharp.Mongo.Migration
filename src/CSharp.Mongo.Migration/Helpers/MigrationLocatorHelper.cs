@@ -13,11 +13,11 @@ public static class MigrationLocatorHelper {
     /// Filter a collection of migrations to remove any that have already been recorded.
     /// </summary>
     /// <param name="collection">`MigrationDocument` database collection.</param>
-    /// <param name="migrations">Collection of `IMigration` instances.</param>
-    /// <returns>Filtered collection of `IMigration` instances.</returns>
-    public static IEnumerable<IMigration> FilterCompletedMigrations(
+    /// <param name="migrations">Collection of `IMigrationBase` instances.</param>
+    /// <returns>Filtered collection of `IMigrationBase` instances.</returns>
+    public static IEnumerable<IMigrationBase> FilterCompletedMigrations(
         IMongoCollection<MigrationDocument> collection,
-        IEnumerable<IMigration> migrations
+        IEnumerable<IMigrationBase> migrations
     ) {
         IEnumerable<MigrationDocument> documents = collection.Find(_ => true).ToList();
         return migrations.Where(m => !documents.Any(d => d.Version == m.Version));

@@ -37,7 +37,7 @@ public class MigrationRunner : IMigrationRunner {
         if (_migrationLocator is null)
             throw MigrationLocatorException();
 
-        IEnumerable<IMigration> migrations = _migrationLocator
+        IEnumerable<IMigrationBase> migrations = _migrationLocator
             .GetAvailableMigrations(_migrationCollection)
             .Where(m => !m.Skip);
 
@@ -48,7 +48,7 @@ public class MigrationRunner : IMigrationRunner {
         if (_migrationLocator is null)
             throw MigrationLocatorException();
 
-        IMigration? migration = _migrationLocator.GetMigration(version);
+        IMigrationBase? migration = _migrationLocator.GetMigration(version);
 
         if (migration is null)
             throw new ArgumentException("Unable to locate migration with provided version", nameof(version));
@@ -63,7 +63,12 @@ public class MigrationRunner : IMigrationRunner {
                 nameof(version)
             );
 
-        await migration.DownAsync(_database);
+        if (migration is IMigration syncMigration)
+            syncMigration.Down(_database);
+
+        if (migration is IAsyncMigration asyncMigration)
+            await asyncMigration.DownAsync(_database);
+
         await _migrationCollection.DeleteOneAsync(d => d.Version == version);
 
         return new() {
@@ -71,8 +76,12 @@ public class MigrationRunner : IMigrationRunner {
         };
     }
 
-    private async Task<MigrationDocument> RunMigrationAsync(IMigration migration) {
-        await migration.UpAsync(_database);
+    private async Task<MigrationDocument> RunMigrationAsync(IMigrationBase migration) {
+        if (migration is IMigration syncMigration)
+            syncMigration.Up(_database);
+
+        if (migration is IAsyncMigration asyncMigration)
+            await asyncMigration.UpAsync(_database);
 
         MigrationDocument document = migration.ToDocument();
         await _migrationCollection.InsertOneAsync(document);
@@ -80,14 +89,14 @@ public class MigrationRunner : IMigrationRunner {
         return document;
     }
 
-    private async Task<MigrationResult> RunMigrationsAsync(IEnumerable<IMigration> migrations) {
+    private async Task<MigrationResult> RunMigrationsAsync(IEnumerable<IMigrationBase> migrations) {
         List<MigrationDocument> steps = new();
 
         // Separate regular from ordered migrations - run these in separate blocks
         IEnumerable<IOrderedMigration> orderedMigrations = migrations.OfType<IOrderedMigration>();
-        IEnumerable<IMigration> basicMigrations = migrations.Where(m => m is not IOrderedMigration);
+        IEnumerable<IMigrationBase> basicMigrations = migrations.Where(m => m is not IOrderedMigration);
 
-        foreach (IMigration migration in basicMigrations) {
+        foreach (IAsyncMigration migration in basicMigrations) {
             MigrationDocument document = await RunMigrationAsync(migration);
             steps.Add(document);
         }
@@ -111,7 +120,7 @@ public class MigrationRunner : IMigrationRunner {
                 migrationDocuments
             );
 
-            foreach (IMigration migration in migrationsToRun) {
+            foreach (IMigrationBase migration in migrationsToRun) {
                 MigrationDocument document = await RunMigrationAsync(migration);
                 steps.Add(document);
             }

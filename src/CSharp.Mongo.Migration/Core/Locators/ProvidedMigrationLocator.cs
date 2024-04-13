@@ -7,17 +7,17 @@ using MongoDB.Driver;
 namespace CSharp.Mongo.Migration.Core.Locators;
 
 /// <summary>
-/// Direct provided migration locator, accepts a collection of `IMigration` instances.
+/// Direct provided migration locator, accepts a collection of `IMigrationBase` instances.
 /// </summary>
 public class ProvidedMigrationLocator : IMigrationLocator {
-    private readonly IEnumerable<IMigration> _migrations;
+    private readonly IEnumerable<IMigrationBase> _migrations;
 
-    public ProvidedMigrationLocator(IEnumerable<IMigration> migrations) {
+    public ProvidedMigrationLocator(IEnumerable<IMigrationBase> migrations) {
         _migrations = migrations;
     }
 
-    public IEnumerable<IMigration> GetAvailableMigrations(IMongoCollection<MigrationDocument> collection) =>
+    public IEnumerable<IMigrationBase> GetAvailableMigrations(IMongoCollection<MigrationDocument> collection) =>
         MigrationLocatorHelper.FilterCompletedMigrations(collection, _migrations);
 
-    public IMigration? GetMigration(string version) => _migrations.FirstOrDefault(m => m.Version == version);
+    public IMigrationBase? GetMigration(string version) => _migrations.FirstOrDefault(m => m.Version == version);
 }
