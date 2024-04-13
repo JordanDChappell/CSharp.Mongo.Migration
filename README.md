@@ -41,22 +41,22 @@ await runner
 
 ### Writing Migrations
 
-A migration script should implement the `IMigration` interface. The following properties / methods will need to be defined:
+A migration script should implement the `IMigration` or `IAsyncMigration` interface. The following properties / methods will need to be defined:
 
 - `string Name`
 - `string Version`
-- `Task UpAsync(IMongoDatabase database)`
-- `Task DownAsync(IMongoDatabase database)`
+- `void Up(IMongoDatabase)` / `Task UpAsync(IMongoDatabase database)`
+- `void Down(IMongoDatabase)` / `Task DownAsync(IMongoDatabase database)`
 
 An optional `bool Skip()` method can be defined that can be used to conditionally skip a migration.
 
-`UpAsync` will be run when the `MigrationRunner.RunAsync` method is called.
+`Up` / `UpAsync` will be run when the `MigrationRunner.RunAsync` method is called.
 
-`DownAsync` will be called when the `MigrationRunner.RevertAsync(string)` method is called, if you don't expect to revert a migration, simply have this method throw an exception.
+`Down` / `DownAsync` will be called when the `MigrationRunner.RevertAsync(string)` method is called, if you don't expect to revert a migration, simply have this method throw an exception.
 
 #### Explicit Order
 
-If a migration requires or depends on another migration script, the `IOrderedMigration` interface can be used and it's `DependsOn` property implemented to provide a version dependencies between migrations.
+If a migration requires or depends on another migration script, the `IOrderedMigration` interface can be used and it's `DependsOn` property implemented to provide a version dependencies between migrations. Migrations need to implement one of the `IMigration` or `IAsyncMigration` interfaces along with the `IOrderedMigration` interface to be loaded and run.
 
 **Note:** Circular dependency / valid graph checks are not implemented in the library at this time, be careful defining depencies to avoid issues.
 
