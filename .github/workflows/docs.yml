@@ -11,7 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       configuration: Release
-      documentationDirectory: Documentation
       framework: netstandard2.1
       projectName: CSharp.Mongo.Migration
     steps:
@@ -27,7 +26,7 @@ jobs:
       - name: Generate markdown
         run: |
           defaultdocumentation \
-            -o $documentationDirectory \
+            -o Documentation \
             -a src/$projectName/bin/$configuration/$framework/$projectName.dll \
             -n API \
             -g Assembly \
@@ -35,7 +34,7 @@ jobs:
       - name: Push to Wiki
         uses: SwiftDocOrg/github-wiki-publish-action@v1
         with:
-          path: "$documentationDirectory"
+          path: Documentation
         env:
           GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_REPO_TOKEN }}
 
