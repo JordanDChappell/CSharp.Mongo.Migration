@@ -37,7 +37,7 @@ public class AssemblyMigrationLocatorTests : DatabaseTest, IDisposable {
 
     [Fact]
     public void GetMigrations_GivenAssemblyAndMigrationsInDatabase_ShouldReturnUnappliedMigrations() {
-        List<IAsyncMigration> migrations = new() {
+        List<IMigrationBase> migrations = new() {
             new TestMigration1(),
             new TestMigration2(),
             new TestMigration3(),

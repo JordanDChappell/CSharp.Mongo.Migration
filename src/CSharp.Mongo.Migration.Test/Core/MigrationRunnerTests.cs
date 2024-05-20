@@ -55,9 +55,9 @@ public class MigrationRunnerTests : DatabaseTest, IDisposable {
         };
         await _fixture.Database.GetCollection<TestDocumentV1>("Documents").InsertManyAsync(documentsToMigrate);
 
-        IAsyncMigration migrationToRun = new TestMigration1();
+        IMigration migrationToRun = new TestMigration1();
         var result = await _sut
-            .RegisterLocator(new ProvidedMigrationLocator(new List<IAsyncMigration>() { migrationToRun }))
+            .RegisterLocator(new ProvidedMigrationLocator(new List<IMigrationBase>() { migrationToRun }))
             .RunAsync();
 
         Assert.Single(result.Steps);
@@ -87,14 +87,14 @@ public class MigrationRunnerTests : DatabaseTest, IDisposable {
         };
         await _fixture.Database.GetCollection<TestDocumentV2>("Documents").InsertManyAsync(documentsToMigrate);
 
-        IAsyncMigration migrationToRun = new TestMigration1();
+        IMigration migrationToRun = new TestMigration1();
         await _migrationCollection.InsertOneAsync(new() {
             Name = migrationToRun.Name,
             Version = migrationToRun.Version
         });
 
         var result = await _sut
-            .RegisterLocator(new ProvidedMigrationLocator(new List<IAsyncMigration>() { migrationToRun }))
+            .RegisterLocator(new ProvidedMigrationLocator(new List<IMigrationBase>() { migrationToRun }))
             .RunAsync();
 
         Assert.Empty(result.Steps);
@@ -118,7 +118,7 @@ public class MigrationRunnerTests : DatabaseTest, IDisposable {
         };
         await _fixture.Database.GetCollection<TestDocumentV2>("Documents").InsertManyAsync(documentsToMigrate);
 
-        IAsyncMigration firstMigration = new TestMigration1();
+        IMigration firstMigration = new TestMigration1();
         IAsyncMigration secondMigration = new TestMigration2();
         await _migrationCollection.InsertOneAsync(new() {
             Name = firstMigration.Name,
@@ -126,7 +126,7 @@ public class MigrationRunnerTests : DatabaseTest, IDisposable {
         });
 
         var result = await _sut
-            .RegisterLocator(new ProvidedMigrationLocator(new List<IAsyncMigration>() { firstMigration, secondMigration }))
+            .RegisterLocator(new ProvidedMigrationLocator(new List<IMigrationBase>() { firstMigration, secondMigration }))
             .RunAsync();
 
         Assert.Single(result.Steps);
@@ -177,7 +177,7 @@ public class MigrationRunnerTests : DatabaseTest, IDisposable {
 
     [Fact]
     public async Task RestoreAsync_GivenCannotFindDocument_ShouldThrowArgumentException() {
-        List<IAsyncMigration> migrations = new() { new TestMigration1() };
+        List<IMigrationBase> migrations = new() { new TestMigration1() };
         IMigrationLocator migrationLocator = new ProvidedMigrationLocator(migrations);
 
         var exception = await Assert.ThrowsAsync<ArgumentException>(
@@ -201,7 +201,7 @@ public class MigrationRunnerTests : DatabaseTest, IDisposable {
         await _fixture.Database.GetCollection<TestDocumentV2>("Documents").InsertManyAsync(documentsToRestore);
 
         // Prepare migration locator
-        List<IAsyncMigration> migrations = new() { new TestMigration1() };
+        List<IMigrationBase> migrations = new() { new TestMigration1() };
         IMigrationLocator migrationLocator = new ProvidedMigrationLocator(migrations);
 
         // Insert expected migration document

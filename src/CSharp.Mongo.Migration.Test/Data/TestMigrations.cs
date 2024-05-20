@@ -4,24 +4,24 @@ using MongoDB.Driver;
 
 namespace CSharp.Mongo.Migration.Test.Data;
 
-public class TestMigration1 : IAsyncMigration {
+public class TestMigration1 : IMigration {
     public string Name => "Migration 1";
     public string Version => "1993.10.05 migration1";
 
-    public async Task DownAsync(IMongoDatabase database) {
+    public void Down(IMongoDatabase database) {
         var collection = database.GetCollection<TestDocumentV2>("Documents");
 
         var update = Builders<TestDocumentV2>.Update.Rename(d => d.FullName, nameof(TestDocumentV1.Name));
 
-        await collection.UpdateManyAsync(_ => true, update);
+        collection.UpdateMany(_ => true, update);
     }
 
-    public async Task UpAsync(IMongoDatabase database) {
+    public void Up(IMongoDatabase database) {
         var collection = database.GetCollection<TestDocumentV1>("Documents");
 
         var update = Builders<TestDocumentV1>.Update.Rename(d => d.Name, nameof(TestDocumentV2.FullName));
 
-        await collection.UpdateManyAsync(_ => true, update);
+        collection.UpdateMany(_ => true, update);
     }
 }
 

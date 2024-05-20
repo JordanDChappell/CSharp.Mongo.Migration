@@ -17,7 +17,7 @@ public class ProvidedMigrationLocatorTests : DatabaseTest, IDisposable {
 
     [Fact]
     public void GetMigrations_GivenNoMigrationsInDatabase_ShouldReturnAllMigrations() {
-        List<IAsyncMigration> migrations = new() {
+        List<IMigrationBase> migrations = new() {
             new TestMigration1(),
             new TestMigration2(),
             new TestMigration3(),
@@ -32,7 +32,7 @@ public class ProvidedMigrationLocatorTests : DatabaseTest, IDisposable {
 
     [Fact]
     public void GetMigrations_GivenMigrationsInDatabase_ShouldReturnUnappliedMigrations() {
-        List<IAsyncMigration> migrations = new() {
+        List<IMigrationBase> migrations = new() {
             new TestMigration1(),
             new TestMigration2(),
             new TestMigration3(),
