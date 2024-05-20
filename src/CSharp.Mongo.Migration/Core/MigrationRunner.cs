@@ -109,7 +109,7 @@ public class MigrationRunner : IMigrationRunner {
         IEnumerable<IOrderedMigration> orderedMigrations = migrations.OfType<IOrderedMigration>();
         IEnumerable<IMigrationBase> basicMigrations = migrations.Where(m => m is not IOrderedMigration);
 
-        foreach (IAsyncMigration migration in basicMigrations) {
+        foreach (IMigrationBase migration in basicMigrations) {
             MigrationDocument document = await RunMigrationAsync(migration);
             steps.Add(document);
         }
