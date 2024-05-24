@@ -27,6 +27,42 @@ public class MigrationRunnerTests : DatabaseTest, IDisposable {
     }
 
     [Fact]
+    public async Task RunAsync_GivenDuplicateMigrationVersion_ShouldThrowException() {
+        // Test single duplicate
+        var result = _sut
+            .RegisterLocator(new ProvidedMigrationLocator(new List<IMigration>() {
+                new TestMigration1(),
+                new TestMigration1(),
+            }));
+
+        await Assert.ThrowsAsync<Exception>(result.RunAsync);
+        try {
+            await result.RunAsync();
+        } catch (Exception ex) {
+            Assert.Contains("Duplicate migration versions found", ex.Message);
+            Assert.Contains(new TestMigration1().Version, ex.Message);
+        }
+
+        // Test for multiple duplicates
+        var result2 = _sut
+            .RegisterLocator(new ProvidedMigrationLocator(new List<IAsyncMigration>() {
+                new TestMigration2(),
+                new TestMigration2(),
+                new TestMigration3(),
+                new TestMigration3(),
+            }));
+
+        await Assert.ThrowsAsync<Exception>(result2.RunAsync);
+        try {
+            await result2.RunAsync();
+        } catch (Exception ex) {
+            Assert.Contains("Duplicate migration versions found", ex.Message);
+            Assert.Contains(new TestMigration2().Version, ex.Message);
+            Assert.Contains(new TestMigration3().Version, ex.Message);
+        }
+    }
+
+    [Fact]
     public async Task RunAsync_GivenMigrationLocatorConstructorRegistered_ShouldRun() {
         MigrationRunner sut = new(
             _fixture.ConnectionString,
