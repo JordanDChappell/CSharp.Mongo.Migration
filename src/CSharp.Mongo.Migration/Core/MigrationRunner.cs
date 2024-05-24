@@ -54,6 +54,12 @@ public class MigrationRunner : IMigrationRunner {
             .GetAvailableMigrations(_migrationCollection)
             .Where(m => !m.Skip);
 
+        IEnumerable<IGrouping<string, IMigrationBase>> duplicateMigrations = migrations
+            .GroupBy(m => m.Version)
+            .Where(group => group.Count() > 1);
+        if (duplicateMigrations.Any())
+            throw new Exception($"Duplicate migration versions found: '{string.Join("', '", duplicateMigrations.Select(g => g.Key))}'");
+
         return await RunMigrationsAsync(migrations);
     }
 
