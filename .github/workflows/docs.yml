@@ -26,11 +26,9 @@ jobs:
       - name: Generate markdown
         run: |
           defaultdocumentation \
-            -o Documentation \
-            -a src/$projectName/bin/$configuration/$framework/$projectName.dll \
-            -n API \
-            -g Assembly \
-            --FileNameFactory Name
+            --AssemblyFilePath src/$projectName/bin/$configuration/$framework/$projectName.dll \
+            --ConfigurationFilePath ./docsconfig.json \
+            --OutputDirectoryPath Documentation \
       - name: Push to Wiki
         uses: SwiftDocOrg/github-wiki-publish-action@v1
         with:

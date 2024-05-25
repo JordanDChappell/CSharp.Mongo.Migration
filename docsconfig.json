@@ -1,0 +1,9 @@
+{
+  "AssemblyPageName": "API",
+  "ExternLinksFilePaths": [
+    "./config/docs/mongodblinks.txt"
+  ],
+  "FileNameFactory": "Name",
+  "GeneratedPages": "Assembly",
+  "Markdown.RemoveFileExtensionFromUrl": true
+}
