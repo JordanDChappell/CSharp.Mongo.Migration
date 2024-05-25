@@ -1,0 +1,6 @@
+https://mongodb.github.io/mongo-csharp-driver/2.25.0/api/MongoDB.Bson/
+T:MongoDB.Bson.BsonObjectId|MongoDB.Bson.BsonObjectId.html
+T:MongoDB.Bson.ObjectId|MongoDB.Bson.ObjectId.-ctor.html
+https://mongodb.github.io/mongo-csharp-driver/2.25.0/api/MongoDB.Driver/
+T:MongoDB.Driver.IMongoCollection|MongoDB.Driver.IMongoCollection-1.html|MongoDB.Driver.IMongoCollection<TDocument>
+T:MongoDB.Driver.IMongoDatabase|MongoDB.Driver.IMongoDatabase.html|MongoDB.Driver.IMongoDatabase
