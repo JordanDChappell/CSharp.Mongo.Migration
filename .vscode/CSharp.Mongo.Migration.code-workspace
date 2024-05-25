@@ -19,8 +19,8 @@
 	"extensions": {
 		"recommendations": [
 			"ms-dotnettools.csharp",
+			"ms-dotnettools.csdevkit",
 			"github.vscode-pull-request-github",
-			"jmrog.vscode-nuget-package-manager",
 			"ms-azure-devops.azure-pipelines",
 			"aaron-bond.better-comments",
 			"github.vscode-github-actions",
