@@ -3,6 +3,9 @@ using CSharp.Mongo.Migration.Infrastructure;
 using CSharp.Mongo.Migration.Interfaces;
 using CSharp.Mongo.Migration.Models;
 
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+
 using MongoDB.Driver;
 
 namespace CSharp.Mongo.Migration.Core;
@@ -14,6 +17,7 @@ public class MigrationRunner : IMigrationRunner {
     private readonly IMongoDatabase _database;
     private readonly IMongoCollection<MigrationDocument> _migrationCollection;
     private IMigrationLocator? _migrationLocator;
+    private ILogger _logger = NullLogger<MigrationRunner>.Instance;
 
     public string MigrationCollectionName { get; set; } = "_migrations";
 
@@ -46,6 +50,11 @@ public class MigrationRunner : IMigrationRunner {
         return this;
     }
 
+    public IMigrationRunner RegisterLogger(ILogger logger) {
+        _logger = logger;
+        return this;
+    }
+
     public async Task<MigrationResult> RunAsync() {
         if (_migrationLocator is null)
             throw MigrationLocatorException();
@@ -54,11 +63,27 @@ public class MigrationRunner : IMigrationRunner {
             .GetAvailableMigrations(_migrationCollection)
             .Where(m => !m.Skip);
 
+        if (!migrations.Any()) {
+            _logger.LogInformation("Unable to locate any migrations to run, exiting application");
+            return new();
+        }
+
+        _logger.LogInformation(
+            "Located {numMigrations} migration(s), preparing to run the following: {migrationVersions}",
+            migrations.Count(),
+            PrintMigrationVersions(migrations)
+        );
+
         IEnumerable<IGrouping<string, IMigrationBase>> duplicateMigrations = migrations
             .GroupBy(m => m.Version)
             .Where(group => group.Count() > 1);
-        if (duplicateMigrations.Any())
-            throw new Exception($"Duplicate migration versions found: '{string.Join("', '", duplicateMigrations.Select(g => g.Key))}'");
+
+        if (duplicateMigrations.Any()) {
+            IEnumerable<IMigrationBase> duplicates = duplicateMigrations.SelectMany(group => group);
+            throw new Exception(
+                $"Duplicate migration versions found: {PrintMigrationVersions(duplicates)}"
+            );
+        }
 
         return await RunMigrationsAsync(migrations);
     }
@@ -90,6 +115,8 @@ public class MigrationRunner : IMigrationRunner {
 
         await _migrationCollection.DeleteOneAsync(d => d.Version == version);
 
+        _logger.LogInformation("Completed reverting migration with version: '{version}'", migration.Version);
+
         return new() {
             Steps = new List<MigrationDocument>() { document },
         };
@@ -104,6 +131,8 @@ public class MigrationRunner : IMigrationRunner {
 
         MigrationDocument document = migration.ToDocument();
         await _migrationCollection.InsertOneAsync(document);
+
+        _logger.LogInformation("Completed running migration with version: '{version}'", migration.Version);
 
         return document;
     }
@@ -152,4 +181,7 @@ public class MigrationRunner : IMigrationRunner {
         nameof(_migrationLocator),
         "Unable to run migrations without registering an `IMigrationLocator`"
     );
+
+    private string PrintMigrationVersions(IEnumerable<IMigrationBase> migrations) =>
+        $"'{string.Join("', '", migrations.OrderBy(m => m.Version).Select(m => m.Version))}'";
 }

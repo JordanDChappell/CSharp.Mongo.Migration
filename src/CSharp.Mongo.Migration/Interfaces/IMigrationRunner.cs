@@ -1,5 +1,7 @@
 ﻿using CSharp.Mongo.Migration.Models;
 
+using Microsoft.Extensions.Logging;
+
 namespace CSharp.Mongo.Migration.Interfaces;
 
 /// <summary>
@@ -12,6 +14,12 @@ public interface IMigrationRunner {
     /// <param name="locator">`IMigrationLocator` instance.</param>
     /// <returns>The current `IMigrationRunner` instance, `this`.</returns>
     public IMigrationRunner RegisterLocator(IMigrationLocator locator);
+    /// <summary>
+    /// Register an optional `ILogger` instance with the current runner instance.
+    /// </summary>
+    /// <param name="logger">`ILogger` instance.</param>
+    /// <returns>The current `IMigrationRunner` instance, `this`.</returns>
+    public IMigrationRunner RegisterLogger(ILogger logger);
     /// <summary>
     /// Run all available migrations.
     /// </summary>
