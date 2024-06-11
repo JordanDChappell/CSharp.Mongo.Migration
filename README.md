@@ -77,6 +77,12 @@ When a migration has been applied a new document will be created in the target d
 
 **Note:** to override the default collection name, use a constructor that includes the `migrationCollectionName` parameter, or set the public `MigrationRunner.MigrationCollectionName` property.
 
+### Logging
+
+This library provides support for logging using [Microsoft.Extensions.Logging](https://learn.microsoft.com/en-us/dotnet/core/extensions/logging?tabs=command-line).
+
+The `MigrationRunner` class writes information level logs that help to understand which migrations have been located and when they have successfully completed. In order to configure logging use the `RegisterLogger` function.
+
 ## Why Create Another Library?
 
 There are a number of other libraries for MongoDB designed to be used in C#. This library was written out of necessity to be used in a large development team with fairly sizeable database instances. There are some use cases that this library caters to that others do not:
