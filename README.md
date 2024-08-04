@@ -60,6 +60,17 @@ If a migration requires or depends on another migration script, the `IOrderedMig
 
 **Note:** Circular dependency / valid graph checks are not implemented in the library at this time, be careful defining depencies to avoid issues.
 
+#### Ignoring Migrations
+
+If a migration is no longer required, you can remove the class from your application, or use the `[IgnoreMigration]` attribute on that class.
+
+For example:
+
+```
+[IgnoreMigration]
+public class MyMigration1 : IMigration { }
+```
+
 ### Restoring Migrations
 
 To revert or restore a migration run the `RevertAsync("version")` function on an instance of the `MigrationRunner` class
