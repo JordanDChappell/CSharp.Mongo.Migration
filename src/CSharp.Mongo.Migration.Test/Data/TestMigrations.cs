@@ -111,10 +111,3 @@ public class TestCyclicMigration2 : IOrderedMigration {
     public string Name => "TestCyclicMigration2";
     public string Version => "TestCyclicMigration2";
 }
-
-[IgnoreMigration]
-public class TestInvalidMigration : IOrderedMigration {
-    public IEnumerable<string> DependsOn => new List<string>() { "AMissingMigration" };
-    public string Name => "TestInvalidMigration";
-    public string Version => "TestInvalidMigration";
-}

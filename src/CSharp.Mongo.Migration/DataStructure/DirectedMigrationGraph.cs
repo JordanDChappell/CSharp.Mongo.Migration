@@ -42,7 +42,9 @@ public class DirectedMigrationGraph {
         Dictionary<string, int> indegrees = _allMigrations.ToDictionary(migration => migration.Version, _ => 0);
         foreach (string version in _nodes.Keys) {
             foreach (string dependency in _nodes[version]) {
-                indegrees[version] += 1;
+                // Account for missing dependencies, likely due to migrations that are in the database already
+                if (_allMigrations.Any(m => m.Version == dependency))
+                    indegrees[version] += 1;
             }
         }
 
@@ -125,34 +127,10 @@ public class DirectedMigrationGraph {
     }
 
     /// <summary>
-    /// Ensure that all dependencies have been located for each node in the graph.
-    /// </summary>
-    /// <returns>True if the graph is valid, else false.</returns>
-    public bool IsValid() {
-        foreach (string version in _nodes.Keys) {
-            List<string> node = _nodes[version];
-
-            if (_allMigrations.First(m => m.Version == version) is not IOrderedMigration orderedMigration)
-                return false;
-
-            IEnumerable<IMigrationBase> dependentMigrations = _allMigrations
-                .Where(m => orderedMigration.DependsOn.Contains(m.Version));
-
-            if (node.Count != dependentMigrations.Count())
-                return false;
-        }
-
-        return true;
-    }
-
-    /// <summary>
     /// Determine an order of nodes in the graph and return an ordered collection of migrations.
     /// </summary>
     /// <returns>An ordered collection of migrations.</returns>
     public List<IMigrationBase> GetOrderedMigrations() {
-        if (!IsValid())
-            throw new Exception("Missing migration dependency, unable to determine order");
-
         if (IsCyclic())
             throw new Exception("Circular migration dependencies detected, unable to determine order");
 

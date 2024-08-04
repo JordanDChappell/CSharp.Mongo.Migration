@@ -23,58 +23,14 @@ public class DirectedMigrationGraphTests {
 
     [Fact]
     public void IsCyclic_GivenCyclicalDependencies_ShouldReturnTrue() {
-        List<IMigrationBase> migrations = new() {
+        List<IMigrationBase> migrations = [
             new TestCyclicMigration1(),
             new TestCyclicMigration2(),
-        };
+        ];
 
         DirectedMigrationGraph graph = new(migrations);
 
         Assert.True(graph.IsCyclic());
-    }
-
-    [Fact]
-    public void IsValid_GivenValidDependencies_ShouldReturnTrue() {
-        List<IMigrationBase> migrations = [
-            new TestMigration1(),
-            new TestMigration2(),
-            new TestMigration3(),
-            new TestMigration4(),
-            new TestMigration5(),
-        ];
-
-        DirectedMigrationGraph graph = new(migrations);
-
-        Assert.True(graph.IsValid());
-    }
-
-    [Fact]
-    public void IsValid_GivenInvalidDependencies_ShouldReturnFalse() {
-        List<IMigrationBase> migrations = [
-            new TestMigration1(),
-            new TestMigration4(),
-            new TestMigration5(),
-            new TestInvalidMigration(),
-        ];
-
-        DirectedMigrationGraph graph = new(migrations);
-
-        Assert.False(graph.IsValid());
-    }
-
-    [Fact]
-    public void GetOrderedMigrations_GivenInvalidGraph_ShouldThrowException() {
-        List<IMigrationBase> migrations = [
-            new TestMigration1(),
-            new TestMigration4(),
-            new TestMigration5(),
-            new TestInvalidMigration(),
-        ];
-
-        DirectedMigrationGraph graph = new(migrations);
-
-        var exception = Assert.Throws<Exception>(graph.GetOrderedMigrations);
-        Assert.Contains("Missing migration dependency", exception.Message);
     }
 
     [Fact]
