@@ -32,33 +32,42 @@ public class DirectedMigrationGraph {
 
     /// <summary>
     /// Apply a topological sort to the graph, and return migrations that have / are dependencies in the sorted order.
+    /// Note: see https://en.wikipedia.org/wiki/Topological_sorting for more info.`
     /// </summary>
     /// <returns>Migrations, in a reasonable order according to dependencies.</returns>
     private List<IMigrationBase> TopologicalSortMigrations() {
         List<string> topologicalOrdering = [];
 
-        // Construct a mapping of nodes to their indegrees (number of edges into each node)
-        Dictionary<string, int> indegrees = _nodes.Keys.ToDictionary(key => key, _ => 0);
-        foreach (string node in _nodes.Keys) {
-            foreach (string dependency in _nodes[node]) {
-                if (indegrees.TryGetValue(dependency, out int value))
-                    indegrees[node] = value + 1;
+        // Construct a mapping of migrations to their indegrees (number of edges into each version)
+        Dictionary<string, int> indegrees = _allMigrations.ToDictionary(migration => migration.Version, _ => 0);
+        foreach (string version in _nodes.Keys) {
+            foreach (string dependency in _nodes[version]) {
+                indegrees[version] += 1;
             }
         }
 
-        // Start by adding nodes with indegree 0
-        // As long as there are nodes with no incoming edges, keep adding them to the sorted collection
-        Queue<string> nodesWithNoIncomingEdges = new(indegrees.Where(kvp => kvp.Value == 0).Select(kvp => kvp.Key));
-        while (nodesWithNoIncomingEdges.Count > 0) {
-            // Add one of those nodes to the ordering
-            string node = nodesWithNoIncomingEdges.Dequeue();
-            topologicalOrdering.Add(node);
+        // Start by adding versions with indegree 0
+        // As long as there are versions with no incoming edges, keep adding them to the sorted collection
+        Queue<string> versionsWithNoIncomingEdges = new(indegrees.Where(kvp => kvp.Value == 0).Select(kvp => kvp.Key));
+        while (versionsWithNoIncomingEdges.Count > 0) {
+            // Add one of those versions to the ordering
+            string version = versionsWithNoIncomingEdges.Dequeue();
+            topologicalOrdering.Add(version);
 
-            // Decremenet the indegree of that node's dependencies
-            foreach (string dependency in _nodes[node]) {
-                indegrees[dependency] -= 1;
-                if (indegrees[dependency] == 0)
-                    nodesWithNoIncomingEdges.Enqueue(dependency);
+            IEnumerable<string> dependentVersions = _nodes
+                .Where(kvp => kvp.Value.Contains(version))
+                .Select(kvp => kvp.Key);
+
+            // Decrement the indegree of that version's dependents
+            foreach (string dependent in dependentVersions) {
+                if (!indegrees.TryGetValue(dependent, out int value))
+                    continue;
+
+                value -= 1;
+                if (value == 0)
+                    versionsWithNoIncomingEdges.Enqueue(dependent);
+
+                indegrees[dependent] = value;
             }
         }
 
@@ -126,7 +135,10 @@ public class DirectedMigrationGraph {
             if (_allMigrations.First(m => m.Version == version) is not IOrderedMigration orderedMigration)
                 return false;
 
-            if (node.Count != orderedMigration.DependsOn.Count())
+            IEnumerable<IMigrationBase> dependentMigrations = _allMigrations
+                .Where(m => orderedMigration.DependsOn.Contains(m.Version));
+
+            if (node.Count != dependentMigrations.Count())
                 return false;
         }
 
@@ -144,9 +156,6 @@ public class DirectedMigrationGraph {
         if (IsCyclic())
             throw new Exception("Circular migration dependencies detected, unable to determine order");
 
-        // Ordered migrations first, then add the left overs
-        List<IMigrationBase> migrations = TopologicalSortMigrations();
-        migrations.AddRange(_allMigrations.Where(m => !migrations.Any(mi => mi.Version == m.Version)));
-        return migrations;
+        return TopologicalSortMigrations();
     }
 }
