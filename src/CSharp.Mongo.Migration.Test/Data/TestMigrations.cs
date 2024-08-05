@@ -97,3 +97,17 @@ public class TestMigration5 : IAsyncMigration, IOrderedMigration {
         return Task.CompletedTask;
     }
 }
+
+[IgnoreMigration]
+public class TestCyclicMigration1 : IOrderedMigration {
+    public IEnumerable<string> DependsOn => new List<string>() { "TestCyclicMigration2" };
+    public string Name => "TestCyclicMigration1";
+    public string Version => "TestCyclicMigration1";
+}
+
+[IgnoreMigration]
+public class TestCyclicMigration2 : IOrderedMigration {
+    public IEnumerable<string> DependsOn => new List<string>() { "TestCyclicMigration1" };
+    public string Name => "TestCyclicMigration2";
+    public string Version => "TestCyclicMigration2";
+}

@@ -33,6 +33,11 @@ public class AssemblyMigrationLocator : IMigrationLocator {
 
     private bool IsMigration(Type type) => _migrationType.IsAssignableFrom(type) && type.IsClass && !type.IsAbstract;
 
-    private IEnumerable<IMigrationBase> GetMigrationsFromAssembly() =>
-        _assembly.GetTypes().Where(IsMigration).Select(t => (IMigrationBase)Activator.CreateInstance(t));
+    private bool HasIgnoreMigrationAttribute(Type type) => type.IsDefined(typeof(IgnoreMigrationAttribute), false);
+
+    private IEnumerable<IMigrationBase> GetMigrationsFromAssembly() => _assembly
+        .GetTypes()
+        .Where(IsMigration)
+        .Where(t => !HasIgnoreMigrationAttribute(t))
+        .Select(t => (IMigrationBase)Activator.CreateInstance(t));
 }

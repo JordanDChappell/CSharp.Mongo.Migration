@@ -37,15 +37,10 @@ public class AssemblyMigrationLocatorTests : DatabaseTest, IDisposable {
 
     [Fact]
     public void GetMigrations_GivenAssemblyAndMigrationsInDatabase_ShouldReturnUnappliedMigrations() {
-        List<IMigrationBase> migrations = new() {
-            new TestMigration1(),
-            new TestMigration2(),
-            new TestMigration3(),
-        };
-
+        TestMigration1 migration = new();
         _migrationCollection.InsertOne(new() {
-            Name = migrations.First().Name,
-            Version = migrations.First().Version,
+            Name = migration.Name,
+            Version = migration.Version,
         });
 
         AssemblyMigrationLocator sut = new(Assembly.GetExecutingAssembly());

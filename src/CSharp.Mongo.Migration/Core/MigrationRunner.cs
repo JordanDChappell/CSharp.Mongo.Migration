@@ -1,4 +1,5 @@
-﻿using CSharp.Mongo.Migration.Helpers;
+﻿using CSharp.Mongo.Migration.DataStructure;
+using CSharp.Mongo.Migration.Helpers;
 using CSharp.Mongo.Migration.Infrastructure;
 using CSharp.Mongo.Migration.Interfaces;
 using CSharp.Mongo.Migration.Models;
@@ -139,42 +140,17 @@ public class MigrationRunner : IMigrationRunner {
 
     private async Task<MigrationResult> RunMigrationsAsync(IEnumerable<IMigrationBase> migrations) {
         List<MigrationDocument> steps = new();
+        DirectedMigrationGraph graph = new(migrations);
+        IEnumerable<IMigrationBase> orderedMigrations = graph.GetOrderedMigrations();
 
-        // Separate regular from ordered migrations - run these in separate blocks
-        IEnumerable<IOrderedMigration> orderedMigrations = migrations.OfType<IOrderedMigration>();
-        IEnumerable<IMigrationBase> basicMigrations = migrations.Where(m => m is not IOrderedMigration);
-
-        foreach (IMigrationBase migration in basicMigrations) {
+        foreach (IMigrationBase migration in orderedMigrations) {
             MigrationDocument document = await RunMigrationAsync(migration);
             steps.Add(document);
         }
 
-        steps.AddRange(await RunOrderedMigrationsAsync(orderedMigrations));
-
         return new() {
             Steps = steps,
         };
-    }
-
-    private async Task<IEnumerable<MigrationDocument>> RunOrderedMigrationsAsync(
-        IEnumerable<IOrderedMigration> migrations
-    ) {
-        List<MigrationDocument> steps = new();
-
-        do {
-            List<MigrationDocument> migrationDocuments = await _migrationCollection.Find(_ => true).ToListAsync();
-            IEnumerable<IOrderedMigration> migrationsToRun = MigrationRunnerHelper.FindMigrationsWhereDependenciesAreMet(
-                migrations.Where(m => !steps.Any(s => s.Version == m.Version)),
-                migrationDocuments
-            );
-
-            foreach (IMigrationBase migration in migrationsToRun) {
-                MigrationDocument document = await RunMigrationAsync(migration);
-                steps.Add(document);
-            }
-        } while (MigrationRunnerHelper.AnyMigrationsLeftToRun(migrations, steps));
-
-        return steps;
     }
 
     private ArgumentNullException MigrationLocatorException() => new(
