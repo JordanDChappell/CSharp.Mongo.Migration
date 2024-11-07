@@ -6,7 +6,7 @@ using MongoDB.Driver;
 
 namespace CSharp.Mongo.Migration.Test.Infrastructure;
 
-public class DatabaseTestFixture : IDisposable {
+public class DatabaseTestFixture {
     private readonly IMongoRunner _mongoDbRunner;
 
     public IMongoDatabase Database { get; set; }
@@ -16,9 +16,5 @@ public class DatabaseTestFixture : IDisposable {
         _mongoDbRunner = MongoRunner.Run();
         ConnectionString = $"{_mongoDbRunner.ConnectionString}/test";
         Database = DatabaseConnectionFactory.GetDatabase(ConnectionString);
-    }
-
-    public void Dispose() {
-        _mongoDbRunner.Dispose();
     }
 }
