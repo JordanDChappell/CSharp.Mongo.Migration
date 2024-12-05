@@ -8,18 +8,18 @@ namespace CSharp.Mongo.Migration.Test.Helpers;
 public class MigrationRunnerHelperTests {
     [Fact]
     public void FindMigrationsWhereDependenciesAreMet_GivenAllDependenciesMet_ShouldReturnAll() {
-        List<IOrderedMigration> orderedMigrations = new() {
+        List<IOrderedMigration> orderedMigrations = [
             new TestMigration4(),
             new TestMigration5(),
-        };
-        List<MigrationDocument> migrationDocuments = new() {
+        ];
+        List<MigrationDocument> migrationDocuments = [
             new MigrationDocument() {
                 Version = "1993.10.05 migration1",
             },
             new MigrationDocument() {
                 Version = "2024.01.01 migration4",
             },
-        };
+        ];
 
         var result = MigrationRunnerHelper.FindMigrationsWhereDependenciesAreMet(orderedMigrations, migrationDocuments);
 
@@ -28,15 +28,15 @@ public class MigrationRunnerHelperTests {
 
     [Fact]
     public void FindMigrationsWhereDependenciesAreMet_GivenNotAllDependenciesMet_ShouldReturnExpectedResult() {
-        List<IOrderedMigration> orderedMigrations = new() {
+        List<IOrderedMigration> orderedMigrations = [
             new TestMigration4(),
             new TestMigration5(),
-        };
-        List<MigrationDocument> migrationDocuments = new() {
+        ];
+        List<MigrationDocument> migrationDocuments = [
             new MigrationDocument() {
                 Version = "1993.10.05 migration1",
             },
-        };
+        ];
 
         var result = MigrationRunnerHelper.FindMigrationsWhereDependenciesAreMet(orderedMigrations, migrationDocuments);
 
@@ -45,15 +45,15 @@ public class MigrationRunnerHelperTests {
 
     [Fact]
     public void AnyMigrationsLeftToRun_GivenNotAllDocumentsExist_ShouldReturnTrue() {
-        List<IOrderedMigration> orderedMigrations = new() {
+        List<IOrderedMigration> orderedMigrations = [
             new TestMigration4(),
             new TestMigration5(),
-        };
-        List<MigrationDocument> migrationDocuments = new() {
+        ];
+        List<MigrationDocument> migrationDocuments = [
             new MigrationDocument() {
                 Version = "2024.01.01 migration4",
             },
-        };
+        ];
 
         var result = MigrationRunnerHelper.AnyMigrationsLeftToRun(orderedMigrations, migrationDocuments);
 
@@ -62,18 +62,18 @@ public class MigrationRunnerHelperTests {
 
     [Fact]
     public void AnyMigrationsLeftToRun_GivenAllDocumentsExist_ShouldReturnFalse() {
-        List<IOrderedMigration> orderedMigrations = new() {
+        List<IOrderedMigration> orderedMigrations = [
             new TestMigration4(),
             new TestMigration5(),
-        };
-        List<MigrationDocument> migrationDocuments = new() {
+        ];
+        List<MigrationDocument> migrationDocuments = [
             new MigrationDocument() {
                 Version = "2024.01.01 migration4",
             },
             new MigrationDocument() {
                 Version = "2024.02.01 migration5",
             },
-        };
+        ];
 
         var result = MigrationRunnerHelper.AnyMigrationsLeftToRun(orderedMigrations, migrationDocuments);
 

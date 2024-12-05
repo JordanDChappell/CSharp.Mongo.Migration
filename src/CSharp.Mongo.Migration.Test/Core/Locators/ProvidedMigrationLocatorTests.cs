@@ -17,11 +17,11 @@ public class ProvidedMigrationLocatorTests : DatabaseTest, IDisposable {
 
     [Fact]
     public void GetMigrations_GivenNoMigrationsInDatabase_ShouldReturnAllMigrations() {
-        List<IMigrationBase> migrations = new() {
+        List<IMigrationBase> migrations = [
             new TestMigration1(),
             new TestMigration2(),
             new TestMigration3(),
-        };
+        ];
 
         ProvidedMigrationLocator sut = new(migrations);
 
@@ -32,11 +32,11 @@ public class ProvidedMigrationLocatorTests : DatabaseTest, IDisposable {
 
     [Fact]
     public void GetMigrations_GivenMigrationsInDatabase_ShouldReturnUnappliedMigrations() {
-        List<IMigrationBase> migrations = new() {
+        List<IMigrationBase> migrations = [
             new TestMigration1(),
             new TestMigration2(),
             new TestMigration3(),
-        };
+        ];
 
         _migrationCollection.InsertOne(new() {
             Name = migrations.First().Name,
