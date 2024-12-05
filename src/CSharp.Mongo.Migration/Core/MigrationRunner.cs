@@ -119,7 +119,7 @@ public class MigrationRunner : IMigrationRunner {
         _logger.LogInformation("Completed reverting migration with version: '{version}'", migration.Version);
 
         return new() {
-            Steps = new List<MigrationDocument>() { document },
+            Steps = [document],
         };
     }
 
@@ -139,7 +139,7 @@ public class MigrationRunner : IMigrationRunner {
     }
 
     private async Task<MigrationResult> RunMigrationsAsync(IEnumerable<IMigrationBase> migrations) {
-        List<MigrationDocument> steps = new();
+        List<MigrationDocument> steps = [];
         DirectedMigrationGraph graph = new(migrations);
         IEnumerable<IMigrationBase> orderedMigrations = graph.GetOrderedMigrations();
 

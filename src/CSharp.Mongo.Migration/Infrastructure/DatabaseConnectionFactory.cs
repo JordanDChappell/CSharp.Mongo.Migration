@@ -6,7 +6,7 @@ namespace CSharp.Mongo.Migration.Infrastructure;
 /// Manage connections to MongoDB.
 /// </summary>
 public static class DatabaseConnectionFactory {
-    private static readonly Dictionary<string, IMongoDatabase> _databases = new();
+    private static readonly Dictionary<string, IMongoDatabase> _databases = [];
 
     /// <summary>
     /// Retrieve an instance of the MongoDB driver `IMongoDatabase` class with the provided connection.

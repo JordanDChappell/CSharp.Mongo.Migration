@@ -1,3 +1,7 @@
 is_global = true
 
+#Missing XML comment for publicly visible type or member 'Type_or_Member'
 dotnet_diagnostic.CS1591.severity = none
+
+#Use collection initializers or expressions (IDE0028)
+dotnet_diagnostic.IDE0028.severity = warning
