@@ -60,22 +60,23 @@ public class MigrationRunner : IMigrationRunner {
         if (_migrationLocator is null)
             throw MigrationLocatorException();
 
-        IEnumerable<IMigrationBase> migrations = _migrationLocator
+        IEnumerable<IMigrationBase> allMigrations = _migrationLocator.GetAllMigrations();
+        IEnumerable<IMigrationBase> migrationsToRun = _migrationLocator
             .GetAvailableMigrations(_migrationCollection)
             .Where(m => !m.Skip);
 
-        if (!migrations.Any()) {
+        if (!migrationsToRun.Any()) {
             _logger.LogInformation("Unable to locate any migrations to run, exiting application");
             return new();
         }
 
         _logger.LogInformation(
             "Located {numMigrations} migration(s), preparing to run the following: {migrationVersions}",
-            migrations.Count(),
-            PrintMigrationVersions(migrations)
+            migrationsToRun.Count(),
+            PrintMigrationVersions(migrationsToRun)
         );
 
-        IEnumerable<IGrouping<string, IMigrationBase>> duplicateMigrations = migrations
+        IEnumerable<IGrouping<string, IMigrationBase>> duplicateMigrations = migrationsToRun
             .GroupBy(m => m.Version)
             .Where(group => group.Count() > 1);
 
@@ -86,7 +87,7 @@ public class MigrationRunner : IMigrationRunner {
             );
         }
 
-        return await RunMigrationsAsync(migrations);
+        return await RunMigrationsAsync(allMigrations, migrationsToRun);
     }
 
     public async Task<MigrationResult> RevertAsync(string version) {
@@ -138,14 +139,21 @@ public class MigrationRunner : IMigrationRunner {
         return document;
     }
 
-    private async Task<MigrationResult> RunMigrationsAsync(IEnumerable<IMigrationBase> migrations) {
+    private async Task<MigrationResult> RunMigrationsAsync(
+        IEnumerable<IMigrationBase> allMigrations,
+        IEnumerable<IMigrationBase> migrationsToRun
+    ) {
         List<MigrationDocument> steps = [];
-        DirectedMigrationGraph graph = new(migrations);
+        DirectedMigrationGraph graph = new(allMigrations);
         IEnumerable<IMigrationBase> orderedMigrations = graph.GetOrderedMigrations();
 
         foreach (IMigrationBase migration in orderedMigrations) {
-            MigrationDocument document = await RunMigrationAsync(migration);
-            steps.Add(document);
+            IMigrationBase migrationToRun = migrationsToRun.FirstOrDefault(m => m.Version == migration.Version);
+
+            if (migrationToRun is not null) {
+                MigrationDocument document = await RunMigrationAsync(migrationToRun);
+                steps.Add(document);
+            }
         }
 
         return new() {

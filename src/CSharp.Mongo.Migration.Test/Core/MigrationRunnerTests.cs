@@ -184,7 +184,7 @@ public class MigrationRunnerTests : DatabaseTest, IDisposable {
     }
 
     [Fact]
-    public async void RunAsync_GivenOrderedMigrations_ShouldRunAllMigrationsInOrder() {
+    public async Task RunAsync_GivenOrderedMigrations_ShouldRunAllMigrationsInOrder() {
         var result = await _sut
             .RegisterLocator(new AssemblyMigrationLocator(Assembly.GetExecutingAssembly()))
             .RunAsync();
@@ -192,6 +192,27 @@ public class MigrationRunnerTests : DatabaseTest, IDisposable {
         Assert.Equal(5, result.Steps.Count());
         Assert.Equal("Migration 4", result.Steps.ElementAt(3).Name);
         Assert.Equal("Migration 5", result.Steps.ElementAt(4).Name);
+
+        var migrations = await _migrationCollection.Find(_ => true).ToListAsync();
+
+        Assert.Equal(5, migrations.Count);
+    }
+
+    [Fact]
+    public async Task RunAsync_GivenOrderedMigrationsAndDependencyAlreadyRun_ShouldRunAllMigrationsInOrder() {
+        await _migrationCollection.InsertOneAsync(new() {
+            Name = "Migration 1",
+            Version = "1993.10.05 migration1",
+            AppliedUtc = DateTime.UtcNow,
+        });
+
+        var result = await _sut
+            .RegisterLocator(new AssemblyMigrationLocator(Assembly.GetExecutingAssembly()))
+            .RunAsync();
+
+        Assert.Equal(4, result.Steps.Count());
+        Assert.Equal("Migration 4", result.Steps.ElementAt(2).Name);
+        Assert.Equal("Migration 5", result.Steps.ElementAt(3).Name);
 
         var migrations = await _migrationCollection.Find(_ => true).ToListAsync();
 

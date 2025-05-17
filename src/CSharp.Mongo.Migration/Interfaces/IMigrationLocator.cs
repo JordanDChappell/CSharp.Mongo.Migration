@@ -9,6 +9,11 @@ namespace CSharp.Mongo.Migration.Interfaces;
 /// </summary>
 public interface IMigrationLocator {
     /// <summary>
+    /// Retrieve a collection of all `IMigrationBase` instances that can be located.
+    /// </summary>
+    /// <returns>Collection of `IMigrationBase` instances/</returns>
+    public IEnumerable<IMigrationBase> GetAllMigrations();
+    /// <summary>
     /// Retrieve a collection of `IMigrationBase` instances that have not been run.
     /// </summary>
     /// <param name="collection">Collection of `MigrationDocument` database entries or migrations that have been 
