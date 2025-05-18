@@ -5,7 +5,7 @@
   <ItemGroup>
     <PackageVersion Include="AutoMoqCore" Version="2.1.0" />
     <PackageVersion Include="coverlet.collector" Version="3.2.0" />
-    <PackageVersion Include="EphemeralMongo7" Version="1.1.3" />
+    <PackageVersion Include="EphemeralMongo7" Version="2.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.7.1" />
     <PackageVersion Include="MongoDB.Driver" Version="3.0.0" />
     <PackageVersion Include="xunit" Version="2.4.2" />

@@ -23,6 +23,8 @@ public class AssemblyMigrationLocator : IMigrationLocator {
         _assembly = Assembly.LoadFrom(assemblyFile);
     }
 
+    public IEnumerable<IMigrationBase> GetAllMigrations() => GetMigrationsFromAssembly();
+
     public IEnumerable<IMigrationBase> GetAvailableMigrations(IMongoCollection<MigrationDocument> collection) {
         IEnumerable<IMigrationBase> migrations = GetMigrationsFromAssembly();
         return MigrationLocatorHelper.FilterCompletedMigrations(collection, migrations);

@@ -16,6 +16,8 @@ public class ProvidedMigrationLocator : IMigrationLocator {
         _migrations = migrations;
     }
 
+    public IEnumerable<IMigrationBase> GetAllMigrations() => _migrations;
+
     public IEnumerable<IMigrationBase> GetAvailableMigrations(IMongoCollection<MigrationDocument> collection) =>
         MigrationLocatorHelper.FilterCompletedMigrations(collection, _migrations);
 
