@@ -1,0 +1,20 @@
+version: 2
+updates:
+  - package-ecosystem: 'nuget'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    groups:
+      # Single PR per MongoDB.Driver update
+      production-dependencies:
+        dependency-type: 'production'
+        patterns:
+          - 'MongoDB.Driver'
+      # Group all other minor / patch updates into a single PR at time of run
+      development-dependencies:
+        dependency-type: 'development'
+        exclude-patterns:
+          - 'MongoDB.Driver'
+        update-types:
+          - 'minor'
+          - 'patch'
