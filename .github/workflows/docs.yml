@@ -15,12 +15,12 @@ jobs:
       projectName: CSharp.Mongo.Migration
     steps:
       - uses: actions/checkout@v4
-      - name: Setup .NET 9.x
+      - name: Setup .NET 10.x
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: | 
             6.x
-            9.x
+            10.x
       - name: Install tools
         run: dotnet tool install DefaultDocumentation.Console -g
       - name: Build solution
