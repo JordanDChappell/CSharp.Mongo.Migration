@@ -23,9 +23,9 @@ jobs:
       - name: Check if MongoDB.Driver version has been updated
         id: check-version
         run: |
-          version=$(sed -n 's/<PackageVersion Include="MongoDB.Driver" Version="\(.*\)" \/>/\1/p' Directory.Packages.props | awk '{$1=$1};1')
-          echo "version=$version" >> "$GITHUB_OUTPUT"
-          if [ "${{ steps.release-version.outputs.release }}" != "$version" ]; then echo "status=run" >> "$GITHUB_OUTPUT"; fi
+          driver_version=$(sed -n 's/<PackageVersion Include="MongoDB.Driver" Version="\(.*\)" \/>/\1/p' Directory.Packages.props | awk '{$1=$1};1')
+          echo "driver_version=$driver_version" >> "$GITHUB_OUTPUT"
+          if [ "${{ steps.release-version.outputs.release }}" != "$driver_version" ]; then echo "status=run" >> "$GITHUB_OUTPUT"; fi
       - name: Create release
         if: ${{ steps.check-version.outputs.status == 'run' }}
         uses: softprops/action-gh-release@v2
@@ -33,6 +33,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           draft: false
           prerelease: false
-          name: ${{ steps.check-version.outputs.version }}
-          tag_name: ${{ steps.check-version.outputs.version }}
+          name: ${{ steps.check-version.outputs.driver_version }}
+          tag_name: ${{ steps.check-version.outputs.driver_version }}
           generate_release_notes: true
