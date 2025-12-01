@@ -26,8 +26,9 @@ jobs:
         run: |
           version=$(sed -n 's/<PackageVersion Include="MongoDB.Driver" Version="\(.*\)" \/>/\1/p' Directory.Packages.props | awk '{$1=$1};1')
           echo "$version"
+          echo "${{ steps.release-version.outputs.release }}"
           echo "version=$version" >> "$GITHUB_OUTPUT"
-          [ "${{ steps.release-version.outputs.release }}" != "$version" ] echo "${{ steps.release-version.outputs.release }} not equal to $version"
+          [ "${{ steps.release-version.outputs.release }}" != "$version" ] && echo "${{ steps.release-version.outputs.release }} not equal to $version"
           [ "${{ steps.release-version.outputs.release }}" != "$version" ] && echo "status=run" >> "$GITHUB_OUTPUT"
       # - name: Create release
       #   if: ${{ steps.check-version.outputs.status == 'run' }}
