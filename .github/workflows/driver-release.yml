@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - devops/auto-approve-merge-dependabot
 
 permissions:
   contents: write
@@ -34,8 +33,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           draft: false
           prerelease: false
-          name: test-1
-          tag_name: test-1
-          # name: ${{ steps.check-version.outputs.version }}
-          # tag_name: ${{ steps.check-version.outputs.version }}
+          name: ${{ steps.check-version.outputs.version }}
+          tag_name: ${{ steps.check-version.outputs.version }}
           generate_release_notes: true
