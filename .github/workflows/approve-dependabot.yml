@@ -5,7 +5,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  dependabot:
+  approve:
     runs-on: ubuntu-latest
     if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'JordanDChappell/CSharp.Mongo.Migration'
     steps:
@@ -13,9 +13,9 @@ jobs:
         id: metadata
         uses: dependabot/fetch-metadata@v2
         with:
-          github-token: ${{ secrets.GH_REPO_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Approve dependabot PR
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GH_REPO_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh pr review --approve "$PR_URL"
