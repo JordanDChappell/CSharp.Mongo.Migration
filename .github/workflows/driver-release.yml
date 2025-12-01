@@ -25,18 +25,17 @@ jobs:
         id: check-version
         run: |
           version=$(sed -n 's/<PackageVersion Include="MongoDB.Driver" Version="\(.*\)" \/>/\1/p' Directory.Packages.props | awk '{$1=$1};1')
-          echo "$version"
-          echo "${{ steps.release-version.outputs.release }}"
           echo "version=$version" >> "$GITHUB_OUTPUT"
-          if [ "${{ steps.release-version.outputs.release }}" != "$version" ]; then echo "${{ steps.release-version.outputs.release }} not equal to $version"; fi
           if [ "${{ steps.release-version.outputs.release }}" != "$version" ]; then echo "status=run" >> "$GITHUB_OUTPUT"; fi
-      # - name: Create release
-      #   if: ${{ steps.check-version.outputs.status == 'run' }}
-      #   uses: softprops/action-gh-release@v2
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     draft: false
-      #     prerelease: false
-      #     name: ${{ steps.check-version.outputs.version }}
-      #     tag_name: ${{ steps.check-version.outputs.version }}
-      #     generate_release_notes: true
+      - name: Create release
+        if: ${{ steps.check-version.outputs.status == 'run' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          draft: false
+          prerelease: false
+          name: test-1
+          tag_name: test-1
+          # name: ${{ steps.check-version.outputs.version }}
+          # tag_name: ${{ steps.check-version.outputs.version }}
+          generate_release_notes: true
