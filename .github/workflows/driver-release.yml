@@ -28,8 +28,8 @@ jobs:
           echo "$version"
           echo "${{ steps.release-version.outputs.release }}"
           echo "version=$version" >> "$GITHUB_OUTPUT"
-          [ "${{ steps.release-version.outputs.release }}" != "$version" ] && echo "${{ steps.release-version.outputs.release }} not equal to $version"
-          [ "${{ steps.release-version.outputs.release }}" != "$version" ] && echo "status=run" >> "$GITHUB_OUTPUT"
+          if [ "${{ steps.release-version.outputs.release }}" != "$version" ]; then echo "${{ steps.release-version.outputs.release }} not equal to $version"; fi
+          if [ "${{ steps.release-version.outputs.release }}" != "$version" ]; then echo "status=run" >> "$GITHUB_OUTPUT"; fi
       # - name: Create release
       #   if: ${{ steps.check-version.outputs.status == 'run' }}
       #   uses: softprops/action-gh-release@v2
